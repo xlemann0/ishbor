@@ -10,7 +10,6 @@ UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Ro'yxatdan o'tgan foydalanuvchilar bazasi
 USERS_DB = [
     {'id': 1, 'name': 'Dilshod', 'phone': '+998901234567', 'password': '123'}
 ]
@@ -26,7 +25,8 @@ JOBS_DB = [
         'salary': '12 000 000 - 18 000 000 so\'m',
         'description': 'Sun\'iy intellekt texnologiyalarida yuqori darajadagi dasturlarni yaratish.',
         'phone': '+998901234567',
-        'check_img': '',
+        'job_img': '',     # E'lonning o'z rasmi (mashina, uy yoki ish)
+        'check_img': '',   # To'lov cheki
         'status': 'active',
         'user_id': 1
     }
@@ -111,11 +111,21 @@ def add_job():
         return redirect(url_for('login'))
         
     if request.method == 'POST':
+        # 1. E'lon rasmini yuklash (mashina, uy yoki ish rasmi)
+        job_filename = ''
+        job_file = request.files.get('job_img')
+        if job_file and job_file.filename != '':
+            filename = secure_filename(job_file.filename)
+            unique_filename = f"job_{int(time.time())}_{filename}"
+            job_file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+            job_filename = unique_filename
+
+        # 2. To'lov chekini yuklash
         check_filename = ''
         check_file = request.files.get('check_img')
         if check_file and check_file.filename != '':
             filename = secure_filename(check_file.filename)
-            unique_filename = f"{int(time.time())}_{filename}"
+            unique_filename = f"check_{int(time.time())}_{filename}"
             check_file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
             check_filename = unique_filename
 
@@ -129,6 +139,7 @@ def add_job():
             'salary': request.form.get('salary'),
             'description': request.form.get('description'),
             'phone': request.form.get('phone'),
+            'job_img': job_filename,
             'check_img': check_filename,
             'status': 'pending',
             'user_id': session.get('user_id')
@@ -156,7 +167,6 @@ def admin_login():
             error = "Admin login yoki paroli xato!"
     return render_template('admin_login.html', error=error)
 
-# Admin panelga e'lonlar bilan birga ro'yxatdan o'tgan foydalanuvchilar ham uzatiladi
 @app.route('/admin')
 def admin_panel():
     if not session.get('is_admin'):
