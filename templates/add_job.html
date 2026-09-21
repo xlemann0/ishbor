@@ -2,97 +2,134 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E'lon berish - IshBor.uz</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .card { border: none; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     </style>
 </head>
-<body class="py-5">
-    <div class="container" style="max-width: 700px;">
-        <div class="card p-4 p-md-5 bg-white">
-            <h2 class="fw-bold text-center mb-2">Vakansiya joylash</h2>
-            <p class="text-center text-muted mb-4">E'loningizni platformaga joylashtirish uchun quyidagi ma'lumotlarni to'ldiring</p>
-            
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary fs-4" href="/"><i class="fa-solid fa-briefcase me-2"></i>IshBor.uz</a>
+            <a href="/" class="btn btn-outline-secondary rounded-pill px-4 btn-sm fw-semibold">Bosh sahifaga qaytish</a>
+        </div>
+    </nav>
+
+    <div class="container my-5" style="max-width: 700px;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+            <h2 class="fw-bold mb-3 text-center">Ish e'lonini joylashtirish</h2>
+            <p class="text-muted text-center mb-4">E'loningiz adminlar tekshiruvidan o'tgach saytga chiqariladi.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} rounded-4 mb-4">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- TO'LOV KARTA RAQAMI (Shu yerdan o'zgartirasiz) -->
             <div class="alert alert-primary border-0 rounded-4 mb-4">
                 <strong>To'lov tartibi:</strong> E'lon berish narxi <strong>20,000 UZS</strong>.<br>
                 Pulni quyidagi kartaga o'tkazing va chek skrinshotini pastga yuklang:<br>
-                <code class="fs-6 fw-bold text-dark">9860 1701 0945 5106 (Raxmatillayev Dilshod)</code>
+                <code class="fs-6 fw-bold text-dark">9860 1203 4567 8910 (Humo / Uzcard) — Kamoliddin R.</code>
             </div>
 
-            <form method="POST" enctype="multipart/form-data" class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Vakansiya nomi (Lavozim):</label>
-                    <input type="text" name="title" class="form-control bg-light border-0 py-2" required placeholder="Masalan: Senior Python Developer">
+            <form method="POST" enctype="multipart/form-data" class="needs-validation">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Vakansiya nomi (Masalan: Python Dasturchi)</label>
+                    <input type="text" name="title" class="form-control form-control-lg" required>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Kompaniya nomi:</label>
-                    <input type="text" name="company" class="form-control bg-light border-0 py-2" required placeholder="Masalan: Tech Corp LLC">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Soha / Kategoriya:</label>
-                    <select name="category" class="form-select bg-light border-0 py-2" required>
-                        {% for cat in categories %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Kompaniya nomi</label>
+                        <input type="text" name="company" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Yo'nalish</label>
+                        <select name="category" class="form-select" required>
+                            {% for cat in categories %}
                             <option value="{{ cat }}">{{ cat }}</option>
-                        {% endfor %}
-                    </select>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Hudud (Viloyat):</label>
-                    <select name="region" class="form-select bg-light border-0 py-2" required>
-                        {% for reg in regions %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Hudud</label>
+                        <select name="region" class="form-select" required>
+                            {% for reg in regions %}
                             <option value="{{ reg }}">{{ reg }}</option>
-                        {% endfor %}
-                    </select>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Ish turi</label>
+                        <select name="job_type" class="form-select" required>
+                            <option value="To'liq stavka">To'liq stavka</option>
+                            <option value="Yarim stavka">Yarim stavka</option>
+                            <option value="Masofadan (Remote)">Masofadan (Remote)</option>
+                            <option value="Stajirovka">Stajirovka</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Ish turi:</label>
-                    <select name="job_type" class="form-select bg-light border-0 py-2" required>
-                        <option value="To'liq stavka">To'liq stavka</option>
-                        <option value="Yarim stavka">Yarim stavka</option>
-                        <option value="Masofaviy (Remote)">Masofaviy (Remote)</option>
-                        <option value="Stajirovka">Stajirovka</option>
-                    </select>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Oylik maosh (Masalan: 5mln - 8mln UZS)</label>
+                        <input type="text" name="salary" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Talab qilinadigan tajriba</label>
+                        <select name="experience" class="form-select" required>
+                            <option value="Talab qilinmaydi">Talab qilinmaydi</option>
+                            <option value="1 yilgacha">1 yilgacha</option>
+                            <option value="1-3 yil">1-3 yil</option>
+                            <option value="3 yildan yuqori">3 yildan yuqori</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Talab etiladigan tajriba:</label>
-                    <select name="experience" class="form-select bg-light border-0 py-2" required>
-                        <option value="Talab etilmaydi">Talab etilmaydi</option>
-                        <option value="1 yilgacha">1 yilgacha</option>
-                        <option value="1 - 3 yil">1 - 3 yil</option>
-                        <option value="3 yildan yuqori">3 yildan yuqori</option>
-                    </select>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Vakansiya haqida batafsil ma'lumot</label>
+                    <textarea name="description" rows="5" class="form-control" placeholder="Talablar, vazifalar va shartlar..." required></textarea>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Oylik maosh:</label>
-                    <input type="text" name="salary" class="form-control bg-light border-0 py-2" required placeholder="Masalan: 5,000,000 - 8,000,000 UZS">
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Bog'lanish uchun telefon raqam</label>
+                        <input type="text" name="phone" class="form-control" placeholder="+998 90 123 45 67" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Telegram username (Majburiy emas)</label>
+                        <input type="text" name="telegram" class="form-control" placeholder="@username">
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Aloqa telefon raqami:</label>
-                    <input type="text" name="phone" class="form-control bg-light border-0 py-2" required placeholder="+998 90 123 45 67">
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-danger"><i class="fa-solid fa-receipt me-1"></i> To'lov cheki skrinshotini yuklang</label>
+                    <input type="file" name="receipt" class="form-control" accept="image/*" required>
                 </div>
-                <div class="col-12">
-                    <label class="form-label fw-semibold">Telegram username (ixtiyoriy):</label>
-                    <input type="text" name="telegram" class="form-control bg-light border-0 py-2" placeholder="@username">
-                </div>
-                <div class="col-12">
-                    <label class="form-label fw-semibold">Vakansiya talablari va shartlari:</label>
-                    <textarea name="description" class="form-control bg-light border-0" rows="4" required placeholder="Vazifalar, qulayliklar va ish vaqti haqida yozing..."></textarea>
-                </div>
-                <div class="col-12">
-                    <label class="form-label fw-semibold text-danger">To'lov cheki skrinshotini yuklang:</label>
-                    <input type="file" name="receipt" class="form-control bg-light border-0 py-2" accept="image/*" required>
-                </div>
-                <div class="col-12 mt-4">
-                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3">E'lonni yuborish</button>
-                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold shadow-sm">E'lonni yuborish</button>
             </form>
-            <div class="text-center mt-3">
-                <a href="/" class="text-decoration-none text-muted">← Bosh sahifaga qaytish</a>
+
+            <div class="text-center mt-4 pt-3 border-top">
+                <p class="text-muted small mb-2">Bizning rasmiy sahifalarimiz:</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="https://t.me/Ishbor_Live" target="_blank" class="btn btn-sm btn-light border text-primary"><i class="fa-brands fa-telegram me-1"></i> Telegram</a>
+                    <a href="https://instagram.com/ishbor.live" target="_blank" class="btn btn-sm btn-light border text-danger"><i class="fa-brands fa-instagram me-1"></i> Instagram</a>
+                </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
