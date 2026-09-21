@@ -3,65 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IshBor-Live.uz — O'zbekistonda ish o'rinlari</title>
+    <title>IshBor-Live.uz — Kelajak Ish O'rinlari Platformasi</title>
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3067/3067444.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .navbar { background: rgba(255, 255, 255, 0.9) !important; backdrop-filter: blur(10px); }
-        .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 25px; padding: 50px 20px; box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3); }
-        .job-card { background: white; border-radius: 20px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: none; }
-        .job-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
-        .badge-custom { background: linear-gradient(45deg, #ff6b6b, #ff8e53); color: white; border-radius: 50px; padding: 6px 15px; }
-        .info-pill { background: #f8f9fa; border-radius: 12px; padding: 8px 12px; font-size: 14px; color: #495057; border: 1px solid #e9ecef; }
-        .filter-chip { background: white; color: #495057; border: 1px solid #dee2e6; border-radius: 50px; padding: 8px 18px; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.2s ease; display: inline-block; margin-bottom: 8px; margin-right: 6px; }
-        .filter-chip:hover, .filter-chip.active { background: #667eea; color: white; border-color: #667eea; }
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary-accent: #6366f1;
+            --secondary-accent: #a855f7;
+        }
+        body {
+            background: var(--bg-gradient);
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        /* Orqa fon nur effekti */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: 20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(80px);
+        }
+        .navbar-glass {
+            background: rgba(15, 23, 42, 0.75) !important;
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .hero-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 60px 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .search-container {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50px;
+            padding: 8px;
+            backdrop-filter: blur(10px);
+        }
+        .search-input {
+            background: transparent !important;
+            border: none !important;
+            color: white !important;
+            box-shadow: none !important;
+        }
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+        .job-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+        }
+        .job-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.3), 0 0 20px rgba(99, 102, 241, 0.15);
+            background: rgba(30, 41, 59, 0.85);
+        }
+        .badge-category {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border: none;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn-gradient:hover {
+            opacity: 0.9;
+            color: white;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+        .filter-select {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: #cbd5e1 !important;
+            border-radius: 16px;
+            padding: 12px 16px;
+        }
+        .filter-select:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-glass fixed-top py-3">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary fs-4" href="/">
-                <i class="fa-solid fa-briefcase me-2"></i>IshBor-Live.uz
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center gap-2 text-white" href="/">
+                <div class="bg-primary p-2 rounded-3 d-flex align-items-center justify-content: center;" style="width: 38px; height: 38px; background: linear-gradient(135deg, #6366f1, #a855f7);">
+                    <i class="fa-solid fa-bolt text-white"></i>
+                </div>
+                IshBor<span class="text-indigo" style="color: #818cf8;">.live</span>
             </a>
-            <div class="d-flex align-items-center gap-2">
+            
+            <div class="d-flex align-items-center gap-3">
                 {% if session.get('user_id') %}
-                    <a href="/logout" class="btn btn-outline-danger rounded-pill px-3 fw-semibold btn-sm">Chiqish</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-secondary px-3 py-2 rounded-pill"><i class="fa-solid fa-user me-1"></i> {{ session.get('user_name') }}</span>
+                        <a href="/logout" class="btn btn-outline-danger btn-sm rounded-pill px-3">Chiqish</a>
+                    </div>
                 {% else %}
-                    <a href="/login" class="btn btn-outline-primary rounded-pill px-3 fw-semibold btn-sm">Kirish</a>
+                    <a href="/login" class="btn btn-outline-light btn-sm rounded-pill px-4">Kirish</a>
                 {% endif %}
 
                 {% if session.get('is_admin') %}
-                    <a href="/admin" class="btn btn-dark rounded-pill px-3 fw-semibold btn-sm">
-                        <i class="fa-solid fa-shield-halved me-1"></i> Admin panel
+                    <a href="/admin" class="btn btn-gradient btn-sm">
+                        <i class="fa-solid fa-shield-halved me-1"></i> Admin Panel
                     </a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <div class="container" style="margin-top: 100px;">
-        <div class="hero-section text-center mb-5">
-            <h1 class="fw-bold display-5 mb-3">O'zbekistonda o'zingizga munosib ish toping</h1>
-            <p class="lead mb-4 opacity-90">Eng so'nggi ishonchli bo'sh ish o'rinlari</p>
-        </div>
+    <!-- Asosiy qism -->
+    <div class="container" style="margin-top: 110px; margin-bottom: 80px;">
         
-        <div class="row">
+        <!-- Hero Banner -->
+        <div class="hero-box text-center mb-5">
+            <span class="badge bg-primary bg-opacity-20 text-indigo mb-3 px-3 py-2 rounded-pill border border-indigo text-white" style="background: rgba(99, 102, 241, 0.2);">🚀 2026-yilning eng ilg'or ish platformasi</span>
+            <h1 class="fw-extrabold display-4 mb-3 text-white">O'zbekistonda eng zamonaviy<br>kasbingizni toping</h1>
+            <p class="text-muted lead mb-4 mx-auto" style="max-width: 600px;">Minglab ishonchli ish o'rinlari, masofaviy imkoniyatlar va eng yaxshi kompaniyalar sizni kutmoqda.</p>
+            
+            <!-- Qidiruv paneli -->
+            <form method="GET" action="/" class="search-container d-flex align-items-center mx-auto" style="max-width: 650px;">
+                <span class="ps-3 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" name="q" value="{{ query }}" class="form-control search-input px-3" placeholder="Kasb, mutaxassislik yoki kalit so'z yozing...">
+                <button type="submit" class="btn btn-gradient rounded-pill px-4 m-1">Izlash</button>
+            </form>
+        </div>
+
+        <!-- Filterlar qismi -->
+        <form method="GET" action="/" class="row g-3 mb-5">
+            <div class="col-md-5">
+                <select name="region" class="form-select filter-select" onchange="this.form.submit()">
+                    <option value="Barchasi">📍 Barcha hududlar</option>
+                    {% for reg in regions %}
+                        <option value="{{ reg }}" {% if selected_region == reg %}selected{% endif %}>{{ reg }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <select name="category" class="form-select filter-select" onchange="this.form.submit()">
+                    <option value="Barchasi">📂 Barcha yo'nalishlar</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <a href="/" class="btn btn-outline-secondary w-100 h-100 d-flex align-items-center justify-content-center rounded-4 text-white border-secondary">Tozalash</a>
+            </div>
+        </form>
+
+        <!-- E'lonlar ro'yxati -->
+        <div class="row g-4">
             {% for job in jobs %}
-            <div class="col-md-6 mb-4">
-                <div class="job-card p-4 shadow-sm">
-                    <h4 class="fw-bold text-dark mb-1">{{ job.title }}</h4>
-                    <p class="text-muted small mb-3"><i class="fa-solid fa-building me-1"></i> {{ job.company }}</p>
-                    <p class="text-secondary small mb-3">{{ job.description }}</p>
-                    <a href="tel:{{ job.phone }}" class="btn btn-success rounded-pill px-4 fw-semibold btn-sm">
-                        <i class="fa-solid fa-phone me-1"></i> {{ job.phone }}
-                    </a>
+            <div class="col-md-6">
+                <div class="job-card p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge-category">{{ job.category }}</span>
+                            <span class="text-muted small"><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ job.region }}</span>
+                        </div>
+                        <h3 class="fw-bold text-white fs-4 mb-2">{{ job.title }}</h3>
+                        <p class="text-indigo mb-3 fw-medium" style="color: #a5b4fc;"><i class="fa-solid fa-building me-1"></i> {{ job.company }}</p>
+                        <p class="text-muted small mb-4">{{ job.description }}</p>
+                    </div>
+                    
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25">
+                        <span class="text-success fw-bold"><i class="fa-solid fa-wallet me-1"></i> {{ job.salary }}</span>
+                        <a href="tel:{{ job.phone }}" class="btn btn-gradient btn-sm px-4">
+                            <i class="fa-solid fa-phone me-1"></i> Bog'lanish
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="p-5" style="background: rgba(30, 41, 59, 0.4); border-radius: 24px; border: 1px dashed var(--glass-border);">
+                    <i class="fa-solid fa-box-open display-4 text-muted mb-3"></i>
+                    <h4 class="text-white fw-bold">Hech qanday e'lon topilmadi</h4>
+                    <p class="text-muted">Boshqa so'zlar bilan qidirib ko'ring yoki filtrlarni o'zgartiring.</p>
                 </div>
             </div>
             {% endfor %}
         </div>
+
     </div>
 
 </body>
