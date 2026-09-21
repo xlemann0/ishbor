@@ -1,33 +1,33 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'maxfiy_kalit_soz_bu_yerga'
+app.secret_key = 'maxfiy_kalit_soz_super_xavfsiz_2026'
 
 # Namuna ma'lumotlar bazasi
 JOBS_DB = [
     {
         'id': 1,
-        'title': 'Python Dasturchi (Backend)',
-        'company': 'Tech Solutions LLC',
+        'title': 'Senior Python Developer (AI & Backend)',
+        'company': 'Tech Solutions Global',
         'category': 'IT va Dasturlash',
         'region': 'Toshkent shahri',
         'job_type': 'To\'liq stavka',
-        'salary': '8 000 000 - 12 000 000 so\'m',
-        'experience': '1-3 yil',
-        'description': 'Python va Flask/Django texnologiyalarini yaxshi biladigan dasturchilarni ishga taklif qilamiz.',
+        'salary': '12 000 000 - 18 000 000 so\'m',
+        'experience': '3-5 yil',
+        'description': 'Sun\'iy intellekt va Flask/FastAPI texnologiyalarida yuqori darajadagi dasturlarni yaratish uchun kuchli mutaxassisni qidiramiz.',
         'phone': '+998901234567',
         'user_id': 1
     },
     {
         'id': 2,
-        'title': 'Sotuv menejeri',
-        'company': 'Farg\'ona savdo uyi',
-        'category': 'Savdo va Menedjment',
+        'title': 'Lead UI/UX Product Designer',
+        'company': 'Creative Studio Lab',
+        'category': 'Dizayn va Media',
         'region': 'Farg\'ona viloyati',
-        'job_type': 'To\'liq stavka',
-        'salary': '5 000 000 so\'m',
-        'experience': 'Tajribasiz',
-        'description': 'Mijozlar bilan muloqot qilish va savdolarni boshqarish uchun faol yigit-qizlarni ishga olamiz.',
+        'job_type': 'Masofaviy (Remote)',
+        'salary': '8 000 000 so\'m',
+        'experience': '1-3 yil',
+        'description': 'Figma dasturida mukammal interfeyslar yaratadigan, zamonaviy trendlardan xabardor dizayner kerak.',
         'phone': '+998919876543',
         'user_id': 2
     }
@@ -35,12 +35,12 @@ JOBS_DB = [
 
 CATEGORIES = [
     "IT va Dasturlash", 
+    "Dizayn va Media", 
     "Savdo va Menedjment", 
     "Ofis va Buxgalteriya", 
     "Ta'lim va Fan", 
     "Qurilish va Ishlab chiqarish", 
-    "Transport va Logistika", 
-    "Boshqa"
+    "Transport va Logistika"
 ]
 
 REGIONS = [
@@ -71,7 +71,10 @@ def index():
     return render_template('index.html', 
                            jobs=filtered_jobs, 
                            categories=CATEGORIES, 
-                           regions=REGIONS)
+                           regions=REGIONS,
+                           selected_region=selected_region,
+                           selected_category=selected_category,
+                           query=query)
 
 @app.route('/login')
 def login():
