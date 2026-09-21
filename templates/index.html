@@ -90,6 +90,11 @@
                     <a href="/my-jobs" class="btn btn-outline-dark rounded-pill px-3 fw-semibold btn-sm">
                         <i class="fa-solid fa-list-check me-1"></i> Mening e'lonlarim
                     </a>
+                    {% if session.get('is_admin') %}
+                        <a href="/admin" class="btn btn-dark rounded-pill px-3 fw-semibold btn-sm">
+                            <i class="fa-solid fa-shield-halved me-1"></i> Admin panel
+                        </a>
+                    {% endif %}
                     <a href="/logout" class="btn btn-outline-danger rounded-pill px-3 fw-semibold btn-sm">Chiqish</a>
                 {% else %}
                     <a href="/login" class="btn btn-outline-primary rounded-pill px-3 fw-semibold btn-sm">Kirish</a>
@@ -128,7 +133,7 @@
             </form>
         </div>
 
-        <!-- Sohalar bo'yicha yo'nalishlar filteri -->
+        <!-- Sohalar bo'yicha yo'nalishlar (Faqat kategoriyalar) -->
         <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
             <p class="section-title"><i class="fa-solid fa-layer-group text-primary me-2"></i>Sohalar bo'yicha yo'nalishlar:</p>
             <div>
