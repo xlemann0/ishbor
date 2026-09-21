@@ -3,12 +3,12 @@ from flask import Flask, render_template, request, redirect, url_for, session
 app = Flask(__name__)
 app.secret_key = 'maxfiy_kalit_soz_super_xavfsiz_2026'
 
-# Namuna foydalanuvchilar bazasi (Ro'yxatdan o'tish uchun)
+# Namuna foydalanuvchilar bazasi (Ro'yxatdan o'tish va kirish uchun)
 USERS_DB = [
     {'id': 1, 'name': 'Dilshod', 'phone': '+998901234567', 'password': '123'}
 ]
 
-# E'lonlar bazasi (Narxlar va boshqa ma'lumotlar bilan)
+# E'lonlar bazasi (Narxlar/Maoshlar bilan)
 JOBS_DB = [
     {
         'id': 1,
