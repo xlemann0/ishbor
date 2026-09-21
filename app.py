@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'maxfiy_kalit_soz_bu_yerga'  # Sessiyalar uchun
+app.secret_key = 'maxfiy_kalit_soz_bu_yerga'
 
-# Namuna ma'lumotlar bazasi
 JOBS_DB = [
     {
         'id': 1,
@@ -51,7 +50,6 @@ REGIONS = [
     "Qoraqalpog'iston Respublikasi"
 ]
 
-# Bosh sahifa
 @app.route('/')
 def index():
     query = request.args.get('q', '').lower()
@@ -74,15 +72,13 @@ def index():
                            categories=CATEGORIES, 
                            regions=REGIONS)
 
-# Oddiy foydalanuvchi sifatida kirish (Test uchun)
 @app.route('/login')
 def login():
     session['user_id'] = 1  
     session['user_name'] = "Dilshod"
-    session['is_admin'] = False  # Oddiy foydalanuvchi admin EMAS!
+    session['is_admin'] = False 
     return redirect(url_for('index'))
 
-# --- ADMIN KIRISH QISMI ---
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     error = None
@@ -90,8 +86,7 @@ def admin_login():
         username = request.form.get('username')
         password = request.form.get('password')
         
-        # O'zingizning admin loginingiz va parolingizni shu yerga yozasiz
-        if username == 'admin' && password == 'dilshod2026':
+        if username == 'admin' and password == 'dilshod2026':
             session['is_admin'] = True
             session['user_name'] = "Admin"
             return redirect(url_for('admin_panel'))
@@ -100,15 +95,13 @@ def admin_login():
             
     return render_template('admin_login.html', error=error)
 
-# Admin panel (Faqat haqiqiy adminlargagina ochiladi)
 @app.route('/admin')
 def admin_panel():
     if not session.get('is_admin'):
-        return redirect(url_for('admin_login'))  # Agar admin bo'lmasa, admin login sahifasiga otib yuboradi
+        return redirect(url_for('admin_login'))
     
     return render_template('admin_panel.html', jobs=JOBS_DB)
 
-# Admin uchun e'lonni o'chirish
 @app.route('/admin/delete-job/<int:job_id>')
 def admin_delete_job(job_id):
     if not session.get('is_admin'):
@@ -118,7 +111,6 @@ def admin_delete_job(job_id):
     JOBS_DB = [j for j in JOBS_DB if j['id'] != job_id]
     return redirect(url_for('admin_panel'))
 
-# Tizimdan chiqish
 @app.route('/logout')
 def logout():
     session.clear()
