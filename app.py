@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 app = Flask(__name__)
 app.secret_key = 'maxfiy_kalit_soz'  # Sessiyalar ishlashi uchun
 
-# Namuna ma'lumotlar bazasi (Siz o'zingizning bazangiz bilan almashtirasiz)
+# Namuna ma'lumotlar bazasi
 JOBS_DB = [
     {
         'id': 1,
@@ -16,7 +16,7 @@ JOBS_DB = [
         'experience': '1-3 yil',
         'description': 'Python va Flask/Django texnologiyalarini yaxshi biladigan dasturchilarni ishga taklif qilamiz.',
         'phone': '+998901234567',
-        'user_id': 1  # Bu e'lonni 1-foydalanuvchi qo'shgan
+        'user_id': 1
     },
     {
         'id': 2,
@@ -74,11 +74,12 @@ def index():
                            categories=CATEGORIES, 
                            regions=REGIONS)
 
-# Tizimga kirish (Test uchun oddiy login)
+# Tizimga kirish (Test uchun)
 @app.route('/login')
 def login():
-    session['user_id'] = 1  # Test maqsadida 1-foydalanuvchi sifatida kirishamiz
+    session['user_id'] = 1  
     session['user_name'] = "Dilshod"
+    session['is_admin'] = True  # Admin panelni sinash uchun ruxsat
     return redirect(url_for('index'))
 
 # Tizimdan chiqish
@@ -87,14 +88,13 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-# E'lon berish sahifasi (Faqat tizimga kirganlar uchun)
+# E'lon berish sahifasi
 @app.route('/add-job', methods=['GET', 'POST'])
 def add_job():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # Agar kirmagan bo'lsa login sahifasiga yo'naltiramiz
+        return redirect(url_for('login'))  # Ro'yxatdan o'tmagan bo'lsa login sahifasiga tashlaydi
     
     if request.method == 'POST':
-        # Yangi e'lonni qo'shish logikasi shu yerga yoziladi
         return redirect(url_for('index'))
         
     return render_template('add_job.html', categories=CATEGORIES, regions=REGIONS)
@@ -109,6 +109,24 @@ def my_jobs():
     user_jobs = [j for j in JOBS_DB if j.get('user_id') == current_user_id]
     
     return render_template('my_jobs.html', jobs=user_jobs)
+
+# Admin panel sahifasi
+@app.route('/admin')
+def admin_panel():
+    if 'user_id' not in session or not session.get('is_admin'):
+        return redirect(url_for('login'))
+    
+    return render_template('admin.html', jobs=JOBS_DB)
+
+# Admin uchun e'lonni o'chirish
+@app.route('/admin/delete-job/<int:job_id>')
+def admin_delete_job(job_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        return redirect(url_for('login'))
+    
+    global JOBS_DB
+    JOBS_DB = [j for j in JOBS_DB if j['id'] != job_id]
+    return redirect(url_for('admin_panel'))
 
 if __name__ == '__main__':
     app.run(debug=True)
