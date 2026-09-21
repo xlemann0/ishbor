@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E'lonni tahrirlash - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }</style>
+</head>
+<body>
+    <div class="container my-5" style="max-width: 700px;">
+        <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white">
+            <h3 class="fw-bold mb-4 text-center">E'lonni tahrirlash (#{{ job.id }})</h3>
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Vakansiya nomi</label>
+                    <input type="text" name="title" class="form-control rounded-pill px-3" value="{{ job.title }}" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Kompaniya</label>
+                        <input type="text" name="company" class="form-control rounded-pill px-3" value="{{ job.company }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Holati</label>
+                        <select name="status" class="form-select rounded-pill px-3" required>
+                            <option value="pending" {% if job.status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                            <option value="active" {% if job.status == 'active' %}selected{% endif %}>Faol (Saytda ko'rsatish)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Yo'nalish</label>
+                        <select name="category" class="form-select rounded-pill px-3" required>
+                            {% for cat in categories %}<option value="{{ cat }}" {% if job.category == cat %}selected{% endif %}>{{ cat }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Hudud</label>
+                        <select name="region" class="form-select rounded-pill px-3" required>
+                            {% for reg in regions %}<option value="{{ reg }}" {% if job.region == reg %}selected{% endif %}>{{ reg }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Ish turi</label>
+                        <input type="text" name="job_type" class="form-control rounded-pill px-3" value="{{ job.job_type }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Oylik maosh</label>
+                        <input type="text" name="salary" class="form-control rounded-pill px-3" value="{{ job.salary }}" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Tajriba</label>
+                        <input type="text" name="experience" class="form-control rounded-pill px-3" value="{{ job.experience }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Telefon</label>
+                        <input type="text" name="phone" class="form-control rounded-pill px-3" value="{{ job.phone }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Telegram</label>
+                    <input type="text" name="telegram" class="form-control rounded-pill px-3" value="{{ job.telegram }}">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Batafsil tavsif</label>
+                    <textarea name="description" rows="4" class="form-control rounded-4 p-3" required>{{ job.description }}</textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold rounded-pill shadow-sm">Saqlash</button>
+                    <a href="/admin-panel" class="btn btn-outline-secondary btn-lg w-100 fw-semibold rounded-pill">Orqaga</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
