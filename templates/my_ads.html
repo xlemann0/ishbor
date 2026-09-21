@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mening E'lonlarim — IshBor-Live.uz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light py-5">
+    <div class="container" style="max-width: 800px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-primary">Mening E'lonlarim</h3>
+            <a href="/" class="btn btn-outline-secondary btn-sm rounded-pill">Bosh sahifa</a>
+        </div>
+        
+        <div class="list-group shadow-sm">
+            {% for job in jobs %}
+            <div class="list-group-item p-4 mb-3 rounded-4 border bg-white">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="badge bg-secondary mb-1">{{ job.ad_type }}</span>
+                        <h5 class="fw-bold mb-1">{{ job.title }}</h5>
+                        <p class="text-muted small mb-2">{{ job.description }}</p>
+                        <span class="text-success fw-bold small">Narxi/Maoshi: {{ job.salary }}</span>
+                    </div>
+                    <div>
+                        {% if job.status == 'pending' %}
+                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">⏳ Admin tekshiruvida (To'lov kutilmoqda)</span>
+                        {% else %}
+                            <span class="badge bg-success px-3 py-2 rounded-pill">✅ Faol (Saytda chop etilgan)</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5 bg-white rounded-4 border">
+                <p class="text-muted mb-3">Siz hali hech qanday e'lon joylamadingiz.</p>
+                <a href="/add-job" class="btn btn-primary rounded-pill px-4">E'lon qo'shish</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
