@@ -2,14 +2,21 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'maxfiy-kalit-soz-ishbor'
+app.config['SECRET_KEY'] = 'maxfiy-kalit-soz-ishbor-live'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['UPLOAD_FOLDER'] = 'static/receipts'
-app.config['ADMIN_PASSWORD'] = 'admin123'  # Admin panel paroli (xohlasangiz o'zgartirishingiz mumkin)
+app.config['ADMIN_PASSWORD'] = 'admin123'
 
 db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fullname = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,6 +37,17 @@ with app.app_context():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     db.create_all()
 
+REGIONS = [
+    "Toshkent shahri", "Farg'ona viloyati", "Andijon viloyati", "Namangan viloyati", 
+    "Samarqand viloyati", "Buxoro viloyati", "Qashqadaryo viloyati", "Surxondaryo viloyati", 
+    "Jizzax viloyati", "Sirdaryo viloyati", "Navoiy viloyati", "Xorazm viloyati", "Qoraqalpog'iston Respublikasi"
+]
+
+CATEGORIES = [
+    "IT va Dasturlash", "Savdo va Menedjment", "Ofis va Buxgalteriya", 
+    "Ta'lim va Fan", "Qurilish va Ishlab chiqarish", "Transport va Logistika", "Boshqa"
+]
+
 @app.route('/')
 def index():
     keyword = request.args.get('q', '').strip()
@@ -46,49 +64,86 @@ def index():
         query = query.filter_by(category=category)
 
     jobs = query.order_by(Job.id.desc()).all()
-    
-    regions = ["Toshkent shahri", "Farg'ona viloyati", "Andijon viloyati", "Namangan viloyati", "Samarqand viloyati", "Buxoro viloyati", "Qashqadaryo viloyati", "Surxondaryo viloyati", "Jizzax viloyati", "Sirdaryo viloyati", "Navoiy viloyati", "Xorazm viloyati", "Qoraqalpog'iston Respublikasi"]
-    categories = ["IT va Dasturlash", "Savdo va Menedjment", "Ofis va Buxgalteriya", "Ta'lim va Fan", "Qurilish va Ishlab chiqarish", "Transport va Logistika", "Boshqa"]
+    return render_template('index.html', jobs=jobs, regions=REGIONS, categories=CATEGORIES)
 
-    return render_template('index.html', jobs=jobs, regions=regions, categories=categories)
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        fullname = request.form.get('fullname')
+        phone = request.form.get('phone')
+        password = generate_password_hash(request.form.get('password'))
+
+        if User.query.filter_by(phone=phone).first():
+            flash("Bu telefon raqam allaqachon ro'yxatdan o'tgan!", "danger")
+            return redirect(url_for('register'))
+
+        new_user = User(fullname=fullname, phone=phone, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        
+        session['user_id'] = new_user.id
+        session['user_name'] = new_user.fullname
+        flash("Muvaffaqiyatli ro'yxatdan o'tdingiz!", "success")
+        return redirect(url_for('add_job'))
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        phone = request.form.get('phone')
+        password = request.form.get('password')
+        user = User.query.filter_by(phone=phone).first()
+
+        if user and check_password_hash(user.password, password):
+            session['user_id'] = user.id
+            session['user_name'] = user.fullname
+            flash("Tizimga muvaffaqiyatli kirdingiz!", "success")
+            return redirect(url_for('add_job'))
+        else:
+            flash("Telefon raqam yoki parol xato!", "danger")
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('user_name', None)
+    return redirect(url_for('index'))
 
 @app.route('/add-job', methods=['GET', 'POST'])
 def add_job():
-    regions = ["Toshkent shahri", "Farg'ona viloyati", "Andijon viloyati", "Namangan viloyati", "Samarqand viloyati", "Buxoro viloyati", "Qashqadaryo viloyati", "Surxondaryo viloyati", "Jizzax viloyati", "Sirdaryo viloyati", "Navoiy viloyati", "Xorazm viloyati", "Qoraqalpog'iston Respublikasi"]
-    categories = ["IT va Dasturlash", "Savdo va Menedjment", "Ofis va Buxgalteriya", "Ta'lim va Fan", "Qurilish va Ishlab chiqarish", "Transport va Logistika", "Boshqa"]
+    if 'user_id' not in session:
+        flash("E'lon berish uchun oldin ro'yxatdan o'ting yoki kiring!", "warning")
+        return redirect(url_for('login'))
     
     if request.method == 'POST':
-        title = request.form.get('title')
-        company = request.form.get('company')
-        category = request.form.get('category')
-        region = request.form.get('region')
-        job_type = request.form.get('job_type')
-        salary = request.form.get('salary')
-        experience = request.form.get('experience')
-        description = request.form.get('description')
-        phone = request.form.get('phone')
-        telegram = request.form.get('telegram')
-        
         file = request.files.get('receipt')
         if file and file.filename != '':
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             
             new_job = Job(
-                title=title, company=company, category=category, region=region,
-                job_type=job_type, salary=salary, experience=experience,
-                description=description, phone=phone, telegram=telegram,
-                receipt=filename, status='pending'
+                title=request.form.get('title'),
+                company=request.form.get('company'),
+                category=request.form.get('category'),
+                region=request.form.get('region'),
+                job_type=request.form.get('job_type'),
+                salary=request.form.get('salary'),
+                experience=request.form.get('experience'),
+                description=request.form.get('description'),
+                phone=request.form.get('phone'),
+                telegram=request.form.get('telegram'),
+                receipt=filename,
+                status='pending'
             )
             db.session.add(new_job)
             db.session.commit()
             
-            flash("E'loningiz muvaffaqiyatli yuborildi! Adminlar tekshiruvidan so'ng saytda e'lon qilinadi.", "success")
+            flash("E'loningiz qabul qilindi! Adminlar tekshiruvidan so'ng saytda e'lon qilinadi.", "success")
             return redirect(url_for('index'))
         else:
             flash("Iltimos, to'lov cheki skrinshotini yuklang!", "danger")
             
-    return render_template('add_job.html', regions=regions, categories=categories)
+    return render_template('add_job.html', regions=REGIONS, categories=CATEGORIES)
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -109,17 +164,39 @@ def admin_panel():
 
 @app.route('/admin/approve/<int:job_id>')
 def approve_job(job_id):
-    if not session.get('is_admin'):
-        return redirect(url_for('admin_login'))
+    if not session.get('is_admin'): return redirect(url_for('admin_login'))
     job = Job.query.get_or_404(job_id)
     job.status = 'active'
     db.session.commit()
     return redirect(url_for('admin_panel'))
 
+@app.route('/admin/edit/<int:job_id>', methods=['GET', 'POST'])
+def edit_job(job_id):
+    if not session.get('is_admin'): return redirect(url_for('admin_login'))
+    job = Job.query.get_or_404(job_id)
+    
+    if request.method == 'POST':
+        job.title = request.form.get('title')
+        job.company = request.form.get('company')
+        job.category = request.form.get('category')
+        job.region = request.form.get('region')
+        job.job_type = request.form.get('job_type')
+        job.salary = request.form.get('salary')
+        job.experience = request.form.get('experience')
+        job.description = request.form.get('description')
+        job.phone = request.form.get('phone')
+        job.telegram = request.form.get('telegram')
+        job.status = request.form.get('status')
+        
+        db.session.commit()
+        flash("E'lon ma'lumotlari muvaffaqiyatli yangilandi!", "success")
+        return redirect(url_for('admin_panel'))
+        
+    return render_template('edit_job.html', job=job, regions=REGIONS, categories=CATEGORIES)
+
 @app.route('/admin/delete/<int:job_id>')
 def delete_job(job_id):
-    if not session.get('is_admin'):
-        return redirect(url_for('admin_login'))
+    if not session.get('is_admin'): return redirect(url_for('admin_login'))
     job = Job.query.get_or_404(job_id)
     db.session.delete(job)
     db.session.commit()
