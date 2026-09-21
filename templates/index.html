@@ -48,7 +48,6 @@
             color: #495057;
             border: 1px solid #e9ecef;
         }
-        /* Yo'nalishlar (kategoriyalar va hududlar) tugmalari dizayni */
         .filter-chip {
             background: white;
             color: #495057;
@@ -88,6 +87,9 @@
             </a>
             <div class="d-flex align-items-center gap-2">
                 {% if session.get('user_id') %}
+                    <a href="/my-jobs" class="btn btn-outline-dark rounded-pill px-3 fw-semibold btn-sm">
+                        <i class="fa-solid fa-list-check me-1"></i> Mening e'lonlarim
+                    </a>
                     <a href="/logout" class="btn btn-outline-danger rounded-pill px-3 fw-semibold btn-sm">Chiqish</a>
                 {% else %}
                     <a href="/login" class="btn btn-outline-primary rounded-pill px-3 fw-semibold btn-sm">Kirish</a>
@@ -126,34 +128,16 @@
             </form>
         </div>
 
-        <!-- Yo'nalishlar (Kategoriyalar va Hududlar bo'yicha tezkor tanlov) -->
+        <!-- Sohalar bo'yicha yo'nalishlar filteri -->
         <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
-            <div class="row">
-                <!-- Sohalar bo'yicha -->
-                <div class="col-lg-6 mb-3 mb-lg-0">
-                    <p class="section-title"><i class="fa-solid fa-layer-group text-primary me-2"></i>Sohalar bo'yicha yo'nalishlar:</p>
-                    <div>
-                        <a href="/?category=Barchasi" class="filter-chip {% if not request.args.get('category') or request.args.get('category') == 'Barchasi' %}active{% endif %}">Barchasi</a>
-                        {% for cat in categories %}
-                        <a href="/?category={{ cat }}{% if request.args.get('region') %}&region={{ request.args.get('region') }}{% endif %}" class="filter-chip {% if request.args.get('category') == cat %}active{% endif %}">
-                            {{ cat }}
-                        </a>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- Hududlar bo'yicha -->
-                <div class="col-lg-6">
-                    <p class="section-title"><i class="fa-solid fa-location-dot text-danger me-2"></i>Hududlar bo'yicha yo'nalishlar:</p>
-                    <div>
-                        <a href="/?region=Barchasi" class="filter-chip {% if not request.args.get('region') or request.args.get('region') == 'Barchasi' %}active{% endif %}">Barchasi</a>
-                        {% for reg in regions %}
-                        <a href="/?region={{ reg }}{% if request.args.get('category') %}&category={{ request.args.get('category') }}{% endif %}" class="filter-chip {% if request.args.get('region') == reg %}active{% endif %}">
-                            {{ reg }}
-                        </a>
-                        {% endfor %}
-                    </div>
-                </div>
+            <p class="section-title"><i class="fa-solid fa-layer-group text-primary me-2"></i>Sohalar bo'yicha yo'nalishlar:</p>
+            <div>
+                <a href="/?category=Barchasi{% if request.args.get('region') %}&region={{ request.args.get('region') }}{% endif %}" class="filter-chip {% if not request.args.get('category') or request.args.get('category') == 'Barchasi' %}active{% endif %}">Barchasi</a>
+                {% for cat in categories %}
+                <a href="/?category={{ cat }}{% if request.args.get('region') %}&region={{ request.args.get('region') }}{% endif %}" class="filter-chip {% if request.args.get('category') == cat %}active{% endif %}">
+                    {{ cat }}
+                </a>
+                {% endfor %}
             </div>
         </div>
 
