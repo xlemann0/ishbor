@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>E'lon berish - IshBor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container my-5" style="max-width: 600px;">
+        <div class="card shadow p-4">
+            <h2 class="text-center mb-3">Vakansiya joylash</h2>
+            <div class="alert alert-warning">
+                <strong>Diqqat!</strong> E'lon berish narxi: <strong>20,000 UZS</strong>.<br>
+                Pulni quyidagi kartaga o'tkazing va chek skrinshotini pastga yuklang:<br>
+                <code>9860 1203 4567 8910 (Humo/Uzcard)</code>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Vakansiya nomi (Lavozim):</label>
+                    <input type="text" name="title" class="form-control" required placeholder="Masalan: Sotuv menejeri">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Soha / Kategoriya:</label>
+                    <input type="text" name="category" class="form-control" required placeholder="Masalan: Savdo / IT">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Hudud (Shahar/Viloyat):</label>
+                    <input type="text" name="region" class="form-control" required placeholder="Masalan: Farg'ona">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Oylik maosh:</label>
+                    <input type="text" name="salary" class="form-control" required placeholder="Masalan: 3,000,000 - 5,000,000 UZS">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Talablar va vazifalar:</label>
+                    <textarea name="description" class="form-control" rows="4" required placeholder="Ish tartibi, talablar..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Aloqa uchun telefon raqam:</label>
+                    <input type="text" name="phone" class="form-control" required placeholder="+998 90 123 45 67">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-danger fw-bold">To'lov cheki (Skrinshot) rasmini yuklang:</label>
+                    <input type="file" name="receipt" class="form-control" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Tasdiqlashga yuborish</button>
+            </form>
+            <div class="text-center mt-3">
+                <a href="/" class="text-decoration-none">← Bosh sahifaga qaytish</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
