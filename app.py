@@ -33,9 +33,23 @@ class Job(db.Model):
     receipt = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(20), default='pending')
 
+# Sayt sozlamalari (karta va narx uchun)
+class Setting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True, nullable=False)
+    value = db.Column(db.Text, nullable=False)
+
 with app.app_context():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     db.create_all()
+    
+    if not Setting.query.filter_by(key='card_number').first():
+        db.session.add(Setting(key='card_number', value='9860 1203 4567 8910'))
+    if not Setting.query.filter_by(key='card_holder').first():
+        db.session.add(Setting(key='card_holder', value='Kamoliddin R.'))
+    if not Setting.query.filter_by(key='job_price').first():
+        db.session.add(Setting(key='job_price', value='20,000 UZS'))
+    db.session.commit()
 
 REGIONS = [
     "Toshkent shahri", "Farg'ona viloyati", "Andijon viloyati", "Namangan viloyati", 
@@ -65,6 +79,11 @@ def index():
 
     jobs = query.order_by(Job.id.desc()).all()
     return render_template('index.html', jobs=jobs, regions=REGIONS, categories=CATEGORIES)
+
+@app.route('/job/<int:job_id>')
+def job_detail(job_id):
+    job = Job.query.get_or_404(job_id)
+    return render_template('job_detail.html', job=job)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -115,6 +134,8 @@ def add_job():
         flash("E'lon berish uchun oldin ro'yxatdan o'ting yoki kiring!", "warning")
         return redirect(url_for('login'))
     
+    settings = {s.key: s.value for s in Setting.query.all()}
+    
     if request.method == 'POST':
         file = request.files.get('receipt')
         if file and file.filename != '':
@@ -143,7 +164,7 @@ def add_job():
         else:
             flash("Iltimos, to'lov cheki skrinshotini yuklang!", "danger")
             
-    return render_template('add_job.html', regions=REGIONS, categories=CATEGORIES)
+    return render_template('add_job.html', regions=REGIONS, categories=CATEGORIES, settings=settings)
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -155,12 +176,27 @@ def admin_login():
             flash("Parol noto'g'ri!", "danger")
     return render_template('admin_login.html')
 
-@app.route('/admin-panel')
+@app.route('/admin-panel', methods=['GET', 'POST'])
 def admin_panel():
     if not session.get('is_admin'):
         return redirect(url_for('admin_login'))
+    
+    if request.method == 'POST':
+        card_number = request.form.get('card_number')
+        card_holder = request.form.get('card_holder')
+        job_price = request.form.get('job_price')
+        
+        Setting.query.filter_by(key='card_number').first().value = card_number
+        Setting.query.filter_by(key='card_holder').first().value = card_holder
+        Setting.query.filter_by(key='job_price').first().value = job_price
+        db.session.commit()
+        
+        flash("To'lov karta ma'lumotlari muvaffaqiyatli yangilandi!", "success")
+        return redirect(url_for('admin_panel'))
+
     jobs = Job.query.order_by(Job.id.desc()).all()
-    return render_template('admin_panel.html', jobs=jobs)
+    settings = {s.key: s.value for s in Setting.query.all()}
+    return render_template('admin_panel.html', jobs=jobs, settings=settings)
 
 @app.route('/admin/approve/<int:job_id>')
 def approve_job(job_id):
@@ -169,30 +205,6 @@ def approve_job(job_id):
     job.status = 'active'
     db.session.commit()
     return redirect(url_for('admin_panel'))
-
-@app.route('/admin/edit/<int:job_id>', methods=['GET', 'POST'])
-def edit_job(job_id):
-    if not session.get('is_admin'): return redirect(url_for('admin_login'))
-    job = Job.query.get_or_404(job_id)
-    
-    if request.method == 'POST':
-        job.title = request.form.get('title')
-        job.company = request.form.get('company')
-        job.category = request.form.get('category')
-        job.region = request.form.get('region')
-        job.job_type = request.form.get('job_type')
-        job.salary = request.form.get('salary')
-        job.experience = request.form.get('experience')
-        job.description = request.form.get('description')
-        job.phone = request.form.get('phone')
-        job.telegram = request.form.get('telegram')
-        job.status = request.form.get('status')
-        
-        db.session.commit()
-        flash("E'lon ma'lumotlari muvaffaqiyatli yangilandi!", "success")
-        return redirect(url_for('admin_panel'))
-        
-    return render_template('edit_job.html', job=job, regions=REGIONS, categories=CATEGORIES)
 
 @app.route('/admin/delete/<int:job_id>')
 def delete_job(job_id):
