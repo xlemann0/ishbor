@@ -14,15 +14,15 @@ db = SQLAlchemy(app)
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
-    company = db.Column(db.String(100), nullable=False)  # Kompaniya nomi
+    company = db.Column(db.String(100), nullable=False)
     category = db.Column(db.String(100), nullable=False)
-    region = db.Column(db.String(100), nullable=False)    # Viloyat
-    job_type = db.Column(db.String(50), nullable=False)  # To'liq stavka, Masofaviy, va h.k.
+    region = db.Column(db.String(100), nullable=False)
+    job_type = db.Column(db.String(50), nullable=False)
     salary = db.Column(db.String(100), nullable=False)
-    experience = db.Column(db.String(50), nullable=False) # Tajriba
+    experience = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text, nullable=False)
     phone = db.Column(db.String(50), nullable=False)
-    telegram = db.Column(db.String(50), nullable=True)   # Telegram username
+    telegram = db.Column(db.String(50), nullable=True)
     receipt = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(20), default='pending')
 
@@ -47,16 +47,15 @@ def index():
 
     jobs = query.order_by(Job.id.desc()).all()
     
-    # Filtr uchun viloyatlar ro'yxati
-    regions = ['Toshkent shahri', 'Farg\'ona viloyati', 'Andijon viloyati', 'Namangan viloyati', 'Samarqand viloyati', 'Buxoro viloyati', 'Qashqadaryo viloyati', 'Surxondaryo viloyati', 'Jizzax viloyati', 'Sirdaryo viloyati', 'Navoiy viloyati', 'Xorazm viloyati', 'Qoraqalpog\'iston Respublikasi']
-    categories = ['IT va Dasturlash', 'Savdo va Menedjment', 'Ofis va Buxgalteriya', 'Ta'lim va Fan', 'Qurilish va Ishlab chiqarish', 'Transport va Logistika', 'Boshqa']
+    regions = ["Toshkent shahri", "Farg'ona viloyati", "Andijon viloyati", "Namangan viloyati", "Samarqand viloyati", "Buxoro viloyati", "Qashqadaryo viloyati", "Surxondaryo viloyati", "Jizzax viloyati", "Sirdaryo viloyati", "Navoiy viloyati", "Xorazm viloyati", "Qoraqalpog'iston Respublikasi"]
+    categories = ["IT va Dasturlash", "Savdo va Menedjment", "Ofis va Buxgalteriya", "Ta'lim va Fan", "Qurilish va Ishlab chiqarish", "Transport va Logistika", "Boshqa"]
 
     return render_template('index.html', jobs=jobs, regions=regions, categories=categories)
 
 @app.route('/add-job', methods=['GET', 'POST'])
 def add_job():
-    regions = ['Toshkent shahri', 'Farg\'ona viloyati', 'Andijon viloyati', 'Namangan viloyati', 'Samarqand viloyati', 'Buxoro viloyati', 'Qashqadaryo viloyati', 'Surxondaryo viloyati', 'Jizzax viloyati', 'Sirdaryo viloyati', 'Navoiy viloyati', 'Xorazm viloyati', 'Qoraqalpog\'iston Respublikasi']
-    categories = ['IT va Dasturlash', 'Savdo va Menedjment', 'Ofis va Buxgalteriya', 'Ta\'lim va Fan', 'Qurilish va Ishlab chiqarish', 'Transport va Logistika', 'Boshqa']
+    regions = ["Toshkent shahri", "Farg'ona viloyati", "Andijon viloyati", "Namangan viloyati", "Samarqand viloyati", "Buxoro viloyati", "Qashqadaryo viloyati", "Surxondaryo viloyati", "Jizzax viloyati", "Sirdaryo viloyati", "Navoiy viloyati", "Xorazm viloyati", "Qoraqalpog'iston Respublikasi"]
+    categories = ["IT va Dasturlash", "Savdo va Menedjment", "Ofis va Buxgalteriya", "Ta'lim va Fan", "Qurilish va Ishlab chiqarish", "Transport va Logistika", "Boshqa"]
     
     if request.method == 'POST':
         title = request.form.get('title')
