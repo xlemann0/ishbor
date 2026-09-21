@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ job.title }} — IshBor-Live.uz</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3067/3067444.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .detail-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <a href="/" class="btn btn-secondary rounded-pill px-4 mb-4 shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2"></i> Orqaga qaytish
+                </a>
+                
+                <div class="detail-card p-5">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h2 class="fw-bold text-dark mb-2">{{ job.title }}</h2>
+                            <p class="text-muted fs-6 mb-0"><i class="fa-solid fa-building me-2"></i><strong>Kompaniya:</strong> {{ job.company }}</p>
+                        </div>
+                        <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">{{ job.category }}</span>
+                    </div>
+
+                    <hr class="text-muted my-4">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-4 border">
+                                <i class="fa-solid fa-location-dot text-danger me-2"></i><strong>Hudud:</strong> {{ job.region }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-4 border">
+                                <i class="fa-solid fa-clock text-primary me-2"></i><strong>Bandlik turi:</strong> {{ job.job_type }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-4 border">
+                                <i class="fa-solid fa-money-bill-wave text-success me-2"></i><strong>Oylik maosh:</strong> {{ job.salary }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-4 border">
+                                <i class="fa-solid fa-user-tie text-warning me-2"></i><strong>Talab qilinadigan tajriba:</strong> {{ job.experience }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-3">Ish haqida batafsil ma'lumot:</h5>
+                    <p class="text-secondary mb-4" style="line-height: 1.8; white-space: pre-line;">{{ job.description }}</p>
+
+                    <div class="p-4 bg-primary bg-opacity-10 rounded-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                        <div>
+                            <h5 class="fw-bold text-primary mb-1">Bog'lanish uchun ma'lumotlar</h5>
+                            <p class="mb-0 text-dark"><i class="fa-solid fa-phone me-2"></i>Tel: <strong>{{ job.phone }}</strong></p>
+                            {% if job.telegram %}
+                            <p class="mb-0 text-dark"><i class="fa-brands fa-telegram me-2"></i>Telegram: <strong>{{ job.telegram }}</strong></p>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="tel:{{ job.phone }}" class="btn btn-success rounded-pill px-4 fw-semibold shadow-sm">
+                                <i class="fa-solid fa-phone me-1"></i> Qo'ng'iroq qilish
+                            </a>
+                            {% if job.telegram %}
+                            <a href="https://t.me/{{ job.telegram.replace('@', '') }}" target="_blank" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                                <i class="fa-brands fa-telegram me-1"></i> Yozish
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
