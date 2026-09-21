@@ -25,8 +25,8 @@ JOBS_DB = [
         'salary': '12 000 000 - 18 000 000 so\'m',
         'description': 'Sun\'iy intellekt texnologiyalarida yuqori darajadagi dasturlarni yaratish.',
         'phone': '+998901234567',
-        'job_img': '',     # E'lonning o'z rasmi (mashina, uy yoki ish)
-        'check_img': '',   # To'lov cheki
+        'job_img': '',     
+        'check_img': '',   
         'status': 'active',
         'user_id': 1
     }
@@ -111,7 +111,6 @@ def add_job():
         return redirect(url_for('login'))
         
     if request.method == 'POST':
-        # 1. E'lon rasmini yuklash (mashina, uy yoki ish rasmi)
         job_filename = ''
         job_file = request.files.get('job_img')
         if job_file and job_file.filename != '':
@@ -120,7 +119,6 @@ def add_job():
             job_file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
             job_filename = unique_filename
 
-        # 2. To'lov chekini yuklash
         check_filename = ''
         check_file = request.files.get('check_img')
         if check_file and check_file.filename != '':
@@ -155,6 +153,54 @@ def my_ads():
         return redirect(url_for('login'))
     user_jobs = [j for j in JOBS_DB if j['user_id'] == session.get('user_id')]
     return render_template('my_ads.html', jobs=user_jobs)
+
+# FOYDALANUVCHI O'Z E'LONINI TAHRIRLASHI
+@app.route('/edit-job/<int:job_id>', methods=['GET', 'POST'])
+def edit_job(job_id):
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    
+    job = next((j for j in JOBS_DB if j['id'] == job_id and j['user_id'] == session.get('user_id')), None)
+    if not job:
+        return redirect(url_for('my_ads'))
+
+    if request.method == 'POST':
+        job['title'] = request.form.get('title')
+        job['company'] = request.form.get('company')
+        job['ad_type'] = request.form.get('ad_type')
+        job['category'] = request.form.get('category')
+        job['region'] = request.form.get('region')
+        job['salary'] = request.form.get('salary')
+        job['description'] = request.form.get('description')
+        job['phone'] = request.form.get('phone')
+
+        # Rasmni o'chirish belgilangan bo'lsa
+        if request.form.get('remove_job_img') == 'yes':
+            job['job_img'] = ''
+
+        # Yangi e'lon rasmi yuklansa
+        job_file = request.files.get('job_img')
+        if job_file and job_file.filename != '':
+            filename = secure_filename(job_file.filename)
+            unique_filename = f"job_{int(time.time())}_{filename}"
+            job_file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+            job['job_img'] = unique_filename
+
+        # Tahrirlangandan keyin yana admin tekshiruviga o'tishi uchun (xohishga ko'ra o'chirib qo'yish mumkin)
+        job['status'] = 'pending'
+
+        return redirect(url_for('my_ads'))
+
+    return render_template('edit_job.html', job=job, ad_types=AD_TYPES, categories=CATEGORIES, regions=REGIONS)
+
+# FOYDALANUVCHI O'Z E'LONINI O'CHIRISHI
+@app.route('/delete-job/<int:job_id>')
+def delete_job(job_id):
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    global JOBS_DB
+    JOBS_DB = [j for j in JOBS_DB if not (j['id'] == job_id and j['user_id'] == session.get('user_id'))]
+    return redirect(url_for('my_ads'))
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
