@@ -33,7 +33,6 @@ class Job(db.Model):
     receipt = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(20), default='pending')
 
-# Sayt sozlamalari (karta va narx uchun)
 class Setting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(50), unique=True, nullable=False)
@@ -130,10 +129,12 @@ def logout():
 
 @app.route('/add-job', methods=['GET', 'POST'])
 def add_job():
+    # E'lon berish bosganda kirmagan bo'lsa, login sahifasiga yo'naltiramiz
     if 'user_id' not in session:
-        flash("E'lon berish uchun oldin ro'yxatdan o'ting yoki kiring!", "warning")
+        flash("E'lon berish uchun oldin ro'yxatdan o'ting yoki tizimga kiring!", "warning")
         return redirect(url_for('login'))
     
+    # Bazadan eng yangi sozlamalarni olib kelamiz
     settings = {s.key: s.value for s in Setting.query.all()}
     
     if request.method == 'POST':
@@ -186,9 +187,19 @@ def admin_panel():
         card_holder = request.form.get('card_holder')
         job_price = request.form.get('job_price')
         
-        Setting.query.filter_by(key='card_number').first().value = card_number
-        Setting.query.filter_by(key='card_holder').first().value = card_holder
-        Setting.query.filter_by(key='job_price').first().value = job_price
+        # Kartani to'g'ri va kafolatli yangilash
+        c_num = Setting.query.filter_by(key='card_number').first()
+        if c_num: c_num.value = card_number
+        else: db.session.add(Setting(key='card_number', value=card_number))
+        
+        c_hold = Setting.query.filter_by(key='card_holder').first()
+        if c_hold: c_hold.value = card_holder
+        else: db.session.add(Setting(key='card_holder', value=card_holder))
+        
+        j_price = Setting.query.filter_by(key='job_price').first()
+        if j_price: j_price.value = job_price
+        else: db.session.add(Setting(key='job_price', value=job_price))
+        
         db.session.commit()
         
         flash("To'lov karta ma'lumotlari muvaffaqiyatli yangilandi!", "success")
