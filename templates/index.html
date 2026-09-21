@@ -12,9 +12,10 @@
         .content-wrap { flex: 1; }
         .navbar-custom { background: #ffffff; border-bottom: 1px solid #e2e8f0; }
         .hero { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border-radius: 24px; padding: 45px 25px; }
-        .card-job { border: 1px solid #e2e8f0; border-radius: 18px; transition: 0.2s; background: #fff; }
+        .card-job { border: 1px solid #e2e8f0; border-radius: 18px; transition: 0.2s; background: #fff; overflow: hidden; }
         .card-job:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
         .badge-type { background: #e0e7ff; color: #4338ca; font-weight: 600; font-size: 11px; padding: 5px 12px; border-radius: 50px; }
+        .job-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid #e2e8f0; }
         .footer-custom { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 30px 0; margin-top: 50px; }
     </style>
 </head>
@@ -76,17 +77,22 @@
             <div class="row g-4">
                 {% for job in jobs %}
                 <div class="col-md-6">
-                    <div class="card-job p-4 h-100 d-flex flex-column justify-content-between">
+                    <div class="card-job h-100 d-flex flex-column justify-content-between">
                         <div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge-type">{{ job.ad_type }}</span>
-                                <span class="text-muted small"><i class="fa-solid fa-location-dot text-danger"></i> {{ job.region }}</span>
+                            {% if job.job_img %}
+                                <img src="{{ url_for('static', filename='uploads/' + job.job_img) }}" alt="E'lon rasmi" class="job-img">
+                            {% endif %}
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge-type">{{ job.ad_type }}</span>
+                                    <span class="text-muted small"><i class="fa-solid fa-location-dot text-danger"></i> {{ job.region }}</span>
+                                </div>
+                                <h4 class="fw-bold text-dark fs-5">{{ job.title }}</h4>
+                                <p class="text-primary small fw-semibold mb-2"><i class="fa-solid fa-building"></i> {{ job.company }}</p>
+                                <p class="text-secondary small mb-3">{{ job.description }}</p>
                             </div>
-                            <h4 class="fw-bold text-dark fs-5">{{ job.title }}</h4>
-                            <p class="text-primary small fw-semibold mb-2"><i class="fa-solid fa-building"></i> {{ job.company }}</p>
-                            <p class="text-secondary small mb-3">{{ job.description }}</p>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <div class="px-4 pb-4 pt-3 border-top d-flex justify-content-between align-items-center">
                             <span class="text-success fw-bold"><i class="fa-solid fa-wallet"></i> {{ job.salary }}</span>
                             <a href="tel:{{ job.phone }}" class="btn btn-success btn-sm rounded-pill px-3 fw-semibold"><i class="fa-solid fa-phone"></i> {{ job.phone }}</a>
                         </div>
@@ -103,19 +109,19 @@
         </div>
     </div>
 
-    <!-- Faqat asosiy sahifaga qo'shilgan Rasmiy sahifalar (Footer) -->
+    <!-- Faqat Telegram, Instagram va Dasturchi tugmalari bilan Footer -->
     <footer class="footer-custom">
         <div class="container text-center">
             <h6 class="fw-bold text-dark mb-3">Rasmiy sahifalarimiz</h6>
             <div class="d-flex justify-content-center gap-4 flex-wrap mb-3">
                 <a href="https://t.me/ishbor_live" target="_blank" class="text-decoration-none text-primary fw-semibold">
-                    <i class="fa-brands fa-telegram"></i> Telegram: @ishbor_live
+                    <i class="fa-brands fa-telegram"></i> Telegram
                 </a>
                 <a href="https://instagram.com/ishbor.live" target="_blank" class="text-decoration-none text-danger fw-semibold">
-                    <i class="fa-brands fa-instagram"></i> Instagram: @ishbor.live
+                    <i class="fa-brands fa-instagram"></i> Instagram
                 </a>
                 <a href="https://t.me/mekhanizatsiya" target="_blank" class="text-decoration-none text-dark fw-semibold">
-                    <i class="fa-solid fa-code"></i> Dasturchi bilan bog'lanish
+                    <i class="fa-solid fa-code"></i> Dasturchi
                 </a>
             </div>
             <p class="text-muted small mb-0">&copy; 2026 IshBor-Live.uz. Barcha huquqlar himoyalangan.</p>
