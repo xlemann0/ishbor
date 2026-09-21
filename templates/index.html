@@ -48,6 +48,35 @@
             color: #495057;
             border: 1px solid #e9ecef;
         }
+        /* Yo'nalishlar (kategoriyalar va hududlar) tugmalari dizayni */
+        .filter-chip {
+            background: white;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-block;
+            margin-bottom: 8px;
+            margin-right: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .filter-chip:hover, .filter-chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+        .section-title {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -57,7 +86,12 @@
             <a class="navbar-brand fw-bold text-primary fs-4" href="/">
                 <i class="fa-solid fa-briefcase me-2"></i>IshBor-Live.uz
             </a>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                {% if session.get('user_id') %}
+                    <a href="/logout" class="btn btn-outline-danger rounded-pill px-3 fw-semibold btn-sm">Chiqish</a>
+                {% else %}
+                    <a href="/login" class="btn btn-outline-primary rounded-pill px-3 fw-semibold btn-sm">Kirish</a>
+                {% endif %}
                 <a href="/add-job" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
                     <i class="fa-solid fa-plus me-1"></i> E'lon berish
                 </a>
@@ -67,6 +101,7 @@
 
     <div class="container" style="margin-top: 100px;">
         
+        <!-- Qidiruv Qismi -->
         <div class="hero-section text-center mb-5">
             <h1 class="fw-bold display-5 mb-3">O'zbekistonda o'zingizga munosib ish toping</h1>
             <p class="lead mb-4 opacity-90">Eng so'nggi ishonchli bo'sh ish o'rinlari va karyera imkoniyatlari</p>
@@ -91,7 +126,42 @@
             </form>
         </div>
 
-        <h3 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-fire text-danger me-2"></i>Mavjud bo'sh ish o'rinlari</h3>
+        <!-- Yo'nalishlar (Kategoriyalar va Hududlar bo'yicha tezkor tanlov) -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+            <div class="row">
+                <!-- Sohalar bo'yicha -->
+                <div class="col-lg-6 mb-3 mb-lg-0">
+                    <p class="section-title"><i class="fa-solid fa-layer-group text-primary me-2"></i>Sohalar bo'yicha yo'nalishlar:</p>
+                    <div>
+                        <a href="/?category=Barchasi" class="filter-chip {% if not request.args.get('category') or request.args.get('category') == 'Barchasi' %}active{% endif %}">Barchasi</a>
+                        {% for cat in categories %}
+                        <a href="/?category={{ cat }}{% if request.args.get('region') %}&region={{ request.args.get('region') }}{% endif %}" class="filter-chip {% if request.args.get('category') == cat %}active{% endif %}">
+                            {{ cat }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Hududlar bo'yicha -->
+                <div class="col-lg-6">
+                    <p class="section-title"><i class="fa-solid fa-location-dot text-danger me-2"></i>Hududlar bo'yicha yo'nalishlar:</p>
+                    <div>
+                        <a href="/?region=Barchasi" class="filter-chip {% if not request.args.get('region') or request.args.get('region') == 'Barchasi' %}active{% endif %}">Barchasi</a>
+                        {% for reg in regions %}
+                        <a href="/?region={{ reg }}{% if request.args.get('category') %}&category={{ request.args.get('category') }}{% endif %}" class="filter-chip {% if request.args.get('region') == reg %}active{% endif %}">
+                            {{ reg }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- E'lonlar Ro'yxati -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-fire text-danger me-2"></i>Mavjud bo'sh ish o'rinlari</h3>
+            <span class="text-muted small">Topildi: {{ jobs|length }} ta e'lon</span>
+        </div>
         
         <div class="row">
             {% for job in jobs %}
@@ -142,7 +212,11 @@
             </div>
             {% else %}
             <div class="col-12 text-center py-5">
-                <p class="text-muted fs-5">Hozircha faol e'lonlar mavjud emas.</p>
+                <div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+                    <i class="fa-solid fa-folder-open text-muted display-4 mb-3"></i>
+                    <p class="text-muted fs-5 mb-2">Tanlangan yo'nalish bo'yicha hozircha e'lonlar mavjud emas.</p>
+                    <a href="/" class="btn btn-outline-primary rounded-pill px-4 mx-auto mt-2">Barcha e'lonlarni ko'rish</a>
+                </div>
             </div>
             {% endfor %}
         </div>
