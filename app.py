@@ -1,18 +1,16 @@
 import os
+import time
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'maxfiy_kalit_soz_super_xavfsiz_2026'
 
-# Chek rasmlari saqlanadigan papka
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Papka mavjud bo'lmasa yaratish
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Ma'lumotlar bazasi
+# Ro'yxatdan o'tgan foydalanuvchilar bazasi
 USERS_DB = [
     {'id': 1, 'name': 'Dilshod', 'phone': '+998901234567', 'password': '123'}
 ]
@@ -114,12 +112,9 @@ def add_job():
         
     if request.method == 'POST':
         check_filename = ''
-        # Chek rasmini serverga yuklash qismi
         check_file = request.files.get('check_img')
         if check_file and check_file.filename != '':
             filename = secure_filename(check_file.filename)
-            # Fayl nomiga vaqt qo'shib takrorlanib qolmasligini ta'minlaymiz
-            import time
             unique_filename = f"{int(time.time())}_{filename}"
             check_file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
             check_filename = unique_filename
@@ -134,7 +129,7 @@ def add_job():
             'salary': request.form.get('salary'),
             'description': request.form.get('description'),
             'phone': request.form.get('phone'),
-            'check_img': check_filename,  # Serverdagi rasm nomi
+            'check_img': check_filename,
             'status': 'pending',
             'user_id': session.get('user_id')
         }
@@ -161,11 +156,12 @@ def admin_login():
             error = "Admin login yoki paroli xato!"
     return render_template('admin_login.html', error=error)
 
+# Admin panelga e'lonlar bilan birga ro'yxatdan o'tgan foydalanuvchilar ham uzatiladi
 @app.route('/admin')
 def admin_panel():
     if not session.get('is_admin'):
         return redirect(url_for('admin_login'))
-    return render_template('admin_panel.html', jobs=JOBS_DB)
+    return render_template('admin_panel.html', jobs=JOBS_DB, users=USERS_DB)
 
 @app.route('/admin/approve-job/<int:job_id>')
 def admin_approve_job(job_id):
