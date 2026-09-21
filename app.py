@@ -1,14 +1,22 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'maxfiy_kalit_soz_super_xavfsiz_2026'
 
-# Ma'lumotlar bazasi (Xotirada saqlanib turadi)
+# Chek rasmlari saqlanadigan papka
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Papka mavjud bo'lmasa yaratish
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Ma'lumotlar bazasi
 USERS_DB = [
     {'id': 1, 'name': 'Dilshod', 'phone': '+998901234567', 'password': '123'}
 ]
 
-# E'lonlar bazasi (status: 'pending' - tasdiq kutyapti, 'active' - tasdiqlangan)
 JOBS_DB = [
     {
         'id': 1,
@@ -20,21 +28,7 @@ JOBS_DB = [
         'salary': '12 000 000 - 18 000 000 so\'m',
         'description': 'Sun\'iy intellekt texnologiyalarida yuqori darajadagi dasturlarni yaratish.',
         'phone': '+998901234567',
-        'check_img': ' namunaviy_chek.jpg',
-        'status': 'active',
-        'user_id': 1
-    },
-    {
-        'id': 2,
-        'title': 'Chevrolet Malibu 2 Elegant',
-        'company': 'Xususiy shaxs',
-        'ad_type': 'Avtomobil',
-        'category': 'Transport',
-        'region': 'Farg\'ona viloyati',
-        'salary': '28 000 $',
-        'description': 'Holati ideal, yili 2023, yurgani 25000 km.',
-        'phone': '+998919876543',
-        'check_img': 'namunaviy_chek.jpg',
+        'check_img': '',
         'status': 'active',
         'user_id': 1
     }
@@ -67,25 +61,17 @@ def index():
     selected_region = request.args.get('region', 'Barchasi')
     selected_ad_type = request.args.get('ad_type', 'Barchasi')
     
-    # Faqatgina admin tasdiqlagan ('active') e'lonlar chiqadi
     filtered_jobs = [j for j in JOBS_DB if j['status'] == 'active']
     
     if query:
         filtered_jobs = [j for j in filtered_jobs if query in j['title'].lower() or query in j['description'].lower()]
-    
     if selected_region and selected_region != 'Barchasi':
         filtered_jobs = [j for j in filtered_jobs if j['region'] == selected_region]
-        
     if selected_ad_type and selected_ad_type != 'Barchasi':
         filtered_jobs = [j for j in filtered_jobs if j['ad_type'] == selected_ad_type]
 
-    return render_template('index.html', 
-                           jobs=filtered_jobs, 
-                           ad_types=AD_TYPES, 
-                           regions=REGIONS,
-                           selected_region=selected_region,
-                           selected_ad_type=selected_ad_type,
-                           query=query)
+    return render_template('index.html', jobs=filtered_jobs, ad_types=AD_TYPES, regions=REGIONS, 
+                           selected_region=selected_region, selected_ad_type=selected_ad_type, query=query)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -127,9 +113,17 @@ def add_job():
         return redirect(url_for('login'))
         
     if request.method == 'POST':
+        check_filename = ''
+        # Chek rasmini serverga yuklash qismi
         check_file = request.files.get('check_img')
-        check_filename = check_file.filename if check_file else 'chek_yuklandi.jpg'
-        
+        if check_file and check_file.filename != '':
+            filename = secure_filename(check_file.filename)
+            # Fayl nomiga vaqt qo'shib takrorlanib qolmasligini ta'minlaymiz
+            import time
+            unique_filename = f"{int(time.time())}_{filename}"
+            check_file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+            check_filename = unique_filename
+
         new_job = {
             'id': len(JOBS_DB) + 1,
             'title': request.form.get('title'),
@@ -140,8 +134,8 @@ def add_job():
             'salary': request.form.get('salary'),
             'description': request.form.get('description'),
             'phone': request.form.get('phone'),
-            'check_img': check_filename,
-            'status': 'pending',  # Admin tasdiqlaguncha kutish rejimida
+            'check_img': check_filename,  # Serverdagi rasm nomi
+            'status': 'pending',
             'user_id': session.get('user_id')
         }
         JOBS_DB.append(new_job)
@@ -149,24 +143,19 @@ def add_job():
         
     return render_template('add_job.html', ad_types=AD_TYPES, categories=CATEGORIES, regions=REGIONS)
 
-# Foydalanuvchining shaxsiy kabineti (Mening e'lonlarim)
 @app.route('/my-ads')
 def my_ads():
     if not session.get('user_id'):
         return redirect(url_for('login'))
-    user_id = session.get('user_id')
-    user_jobs = [j for j in JOBS_DB if j['user_id'] == user_id]
+    user_jobs = [j for j in JOBS_DB if j['user_id'] == session.get('user_id')]
     return render_template('my_ads.html', jobs=user_jobs)
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     error = None
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if username == 'admin' and password == 'dilshod2026':
+        if request.form.get('username') == 'admin' and request.form.get('password') == 'dilshod2026':
             session['is_admin'] = True
-            session['user_name'] = "Admin"
             return redirect(url_for('admin_panel'))
         else:
             error = "Admin login yoki paroli xato!"
@@ -195,16 +184,13 @@ def admin_delete_job(job_id):
     JOBS_DB = [j for j in JOBS_DB if j['id'] != job_id]
     return redirect(url_for('admin_panel'))
 
-# Admin tomonidan e'lonni tahrirlash
 @app.route('/admin/edit-job/<int:job_id>', methods=['GET', 'POST'])
 def admin_edit_job(job_id):
     if not session.get('is_admin'):
         return redirect(url_for('admin_login'))
-    
     job = next((j for j in JOBS_DB if j['id'] == job_id), None)
     if not job:
         return redirect(url_for('admin_panel'))
-        
     if request.method == 'POST':
         job['title'] = request.form.get('title')
         job['company'] = request.form.get('company')
@@ -212,7 +198,6 @@ def admin_edit_job(job_id):
         job['region'] = request.form.get('region')
         job['description'] = request.form.get('description')
         return redirect(url_for('admin_panel'))
-        
     return render_template('admin_edit_job.html', job=job, regions=REGIONS)
 
 @app.route('/logout')
