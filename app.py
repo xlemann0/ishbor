@@ -92,7 +92,7 @@ def logout():
 @app.route('/add-job', methods=['GET', 'POST'])
 def add_job():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # Ro'yxatdan o'tmagan bo'lsa login sahifasiga tashlaydi
+        return redirect(url_for('login'))
     
     if request.method == 'POST':
         return redirect(url_for('index'))
@@ -110,13 +110,13 @@ def my_jobs():
     
     return render_template('my_jobs.html', jobs=user_jobs)
 
-# Admin panel sahifasi
+# Admin panel sahifasi (GitHub-dagi admin_panel.html fayliga ulandi)
 @app.route('/admin')
 def admin_panel():
     if 'user_id' not in session or not session.get('is_admin'):
         return redirect(url_for('login'))
     
-    return render_template('admin.html', jobs=JOBS_DB)
+    return render_template('admin_panel.html', jobs=JOBS_DB)
 
 # Admin uchun e'lonni o'chirish
 @app.route('/admin/delete-job/<int:job_id>')
