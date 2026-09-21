@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'maxfiy_kalit_soz'  # Sessiyalar ishlashi uchun
+app.secret_key = 'maxfiy_kalit_soz_bu_yerga'  # Sessiyalar uchun
 
 # Namuna ma'lumotlar bazasi
 JOBS_DB = [
@@ -74,59 +74,55 @@ def index():
                            categories=CATEGORIES, 
                            regions=REGIONS)
 
-# Tizimga kirish (Test uchun)
+# Oddiy foydalanuvchi sifatida kirish (Test uchun)
 @app.route('/login')
 def login():
     session['user_id'] = 1  
     session['user_name'] = "Dilshod"
-    session['is_admin'] = True  # Admin panelni sinash uchun ruxsat
+    session['is_admin'] = False  # Oddiy foydalanuvchi admin EMAS!
     return redirect(url_for('index'))
 
-# Tizimdan chiqish
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
-
-# E'lon berish sahifasi
-@app.route('/add-job', methods=['GET', 'POST'])
-def add_job():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
+# --- ADMIN KIRISH QISMI ---
+@app.route('/admin-login', methods=['GET', 'POST'])
+def admin_login():
+    error = None
     if request.method == 'POST':
-        return redirect(url_for('index'))
+        username = request.form.get('username')
+        password = request.form.get('password')
         
-    return render_template('add_job.html', categories=CATEGORIES, regions=REGIONS)
+        # O'zingizning admin loginingiz va parolingizni shu yerga yozasiz
+        if username == 'admin' && password == 'dilshod2026':
+            session['is_admin'] = True
+            session['user_name'] = "Admin"
+            return redirect(url_for('admin_panel'))
+        else:
+            error = "Login yoki parol noto'g'ri!"
+            
+    return render_template('admin_login.html', error=error)
 
-# Mening e'lonlarim sahifasi
-@app.route('/my-jobs')
-def my_jobs():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    current_user_id = session.get('user_id')
-    user_jobs = [j for j in JOBS_DB if j.get('user_id') == current_user_id]
-    
-    return render_template('my_jobs.html', jobs=user_jobs)
-
-# Admin panel sahifasi (GitHub-dagi admin_panel.html fayliga ulandi)
+# Admin panel (Faqat haqiqiy adminlargagina ochiladi)
 @app.route('/admin')
 def admin_panel():
-    if 'user_id' not in session or not session.get('is_admin'):
-        return redirect(url_for('login'))
+    if not session.get('is_admin'):
+        return redirect(url_for('admin_login'))  # Agar admin bo'lmasa, admin login sahifasiga otib yuboradi
     
     return render_template('admin_panel.html', jobs=JOBS_DB)
 
 # Admin uchun e'lonni o'chirish
 @app.route('/admin/delete-job/<int:job_id>')
 def admin_delete_job(job_id):
-    if 'user_id' not in session or not session.get('is_admin'):
-        return redirect(url_for('login'))
+    if not session.get('is_admin'):
+        return redirect(url_for('admin_login'))
     
     global JOBS_DB
     JOBS_DB = [j for j in JOBS_DB if j['id'] != job_id]
     return redirect(url_for('admin_panel'))
+
+# Tizimdan chiqish
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
