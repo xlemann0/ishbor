@@ -2,51 +2,95 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>E'lon berish - IshBor</title>
+    <title>E'lon berish - IshBor.uz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .card { border: none; border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container my-5" style="max-width: 600px;">
-        <div class="card shadow p-4">
-            <h2 class="text-center mb-3">Vakansiya joylash</h2>
-            <div class="alert alert-warning">
-                <strong>Diqqat!</strong> E'lon berish narxi: <strong>20,000 UZS</strong>.<br>
+<body class="py-5">
+    <div class="container" style="max-width: 700px;">
+        <div class="card p-4 p-md-5 bg-white">
+            <h2 class="fw-bold text-center mb-2">Vakansiya joylash</h2>
+            <p class="text-center text-muted mb-4">E'loningizni platformaga joylashtirish uchun quyidagi ma'lumotlarni to'ldiring</p>
+            
+            <div class="alert alert-primary border-0 rounded-4 mb-4">
+                <strong>To'lov tartibi:</strong> E'lon berish narxi <strong>20,000 UZS</strong>.<br>
                 Pulni quyidagi kartaga o'tkazing va chek skrinshotini pastga yuklang:<br>
-                <code>9860 1203 4567 8910 (Humo/Uzcard)</code>
+                <code class="fs-6 fw-bold text-dark">9860 1203 4567 8910 (Humo / Uzcard)</code>
             </div>
-            <form method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label class="form-label">Vakansiya nomi (Lavozim):</label>
-                    <input type="text" name="title" class="form-control" required placeholder="Masalan: Sotuv menejeri">
+
+            <form method="POST" enctype="multipart/form-data" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Vakansiya nomi (Lavozim):</label>
+                    <input type="text" name="title" class="form-control bg-light border-0 py-2" required placeholder="Masalan: Senior Python Developer">
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Soha / Kategoriya:</label>
-                    <input type="text" name="category" class="form-control" required placeholder="Masalan: Savdo / IT">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Kompaniya nomi:</label>
+                    <input type="text" name="company" class="form-control bg-light border-0 py-2" required placeholder="Masalan: Tech Corp LLC">
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Hudud (Shahar/Viloyat):</label>
-                    <input type="text" name="region" class="form-control" required placeholder="Masalan: Farg'ona">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Soha / Kategoriya:</label>
+                    <select name="category" class="form-select bg-light border-0 py-2" required>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Oylik maosh:</label>
-                    <input type="text" name="salary" class="form-control" required placeholder="Masalan: 3,000,000 - 5,000,000 UZS">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Hudud (Viloyat):</label>
+                    <select name="region" class="form-select bg-light border-0 py-2" required>
+                        {% for reg in regions %}
+                            <option value="{{ reg }}">{{ reg }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Talablar va vazifalar:</label>
-                    <textarea name="description" class="form-control" rows="4" required placeholder="Ish tartibi, talablar..."></textarea>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Ish turi:</label>
+                    <select name="job_type" class="form-select bg-light border-0 py-2" required>
+                        <option value="To'liq stavka">To'liq stavka</option>
+                        <option value="Yarim stavka">Yarim stavka</option>
+                        <option value="Masofaviy (Remote)">Masofaviy (Remote)</option>
+                        <option value="Stajirovka">Stajirovka</option>
+                    </select>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Aloqa uchun telefon raqam:</label>
-                    <input type="text" name="phone" class="form-control" required placeholder="+998 90 123 45 67">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Talab etiladigan tajriba:</label>
+                    <select name="experience" class="form-select bg-light border-0 py-2" required>
+                        <option value="Talab etilmaydi">Talab etilmaydi</option>
+                        <option value="1 yilgacha">1 yilgacha</option>
+                        <option value="1 - 3 yil">1 - 3 yil</option>
+                        <option value="3 yildan yuqori">3 yildan yuqori</option>
+                    </select>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label text-danger fw-bold">To'lov cheki (Skrinshot) rasmini yuklang:</label>
-                    <input type="file" name="receipt" class="form-control" accept="image/*" required>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Oylik maosh:</label>
+                    <input type="text" name="salary" class="form-control bg-light border-0 py-2" required placeholder="Masalan: 5,000,000 - 8,000,000 UZS">
                 </div>
-                <button type="submit" class="btn btn-primary w-100 py-2">Tasdiqlashga yuborish</button>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Aloqa telefon raqami:</label>
+                    <input type="text" name="phone" class="form-control bg-light border-0 py-2" required placeholder="+998 90 123 45 67">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Telegram username (ixtiyoriy):</label>
+                    <input type="text" name="telegram" class="form-control bg-light border-0 py-2" placeholder="@username">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Vakansiya talablari va shartlari:</label>
+                    <textarea name="description" class="form-control bg-light border-0" rows="4" required placeholder="Vazifalar, qulayliklar va ish vaqti haqida yozing..."></textarea>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold text-danger">To'lov cheki skrinshotini yuklang:</label>
+                    <input type="file" name="receipt" class="form-control bg-light border-0 py-2" accept="image/*" required>
+                </div>
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3">E'lonni yuborish</button>
+                </div>
             </form>
             <div class="text-center mt-3">
-                <a href="/" class="text-decoration-none">← Bosh sahifaga qaytish</a>
+                <a href="/" class="text-decoration-none text-muted">← Bosh sahifaga qaytish</a>
             </div>
         </div>
     </div>
