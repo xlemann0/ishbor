@@ -25,7 +25,7 @@
 
             <form method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold">E'lon turi (Nima sotmoqchisiz yoki taklif qilyapsiz?):</label>
+                    <label class="form-label small fw-semibold">E'lon turi:</label>
                     <select name="ad_type" class="form-select rounded-3" required>
                         {% for t in ad_types %}
                             <option value="{{ t }}">{{ t }}</option>
@@ -33,7 +33,7 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold">Sarlavha (Masalan: Malibu 2 yoki Python Dasturchi):</label>
+                    <label class="form-label small fw-semibold">Sarlavha (Masalan: Malibu 2 yoki 3 xonali kvartira):</label>
                     <input type="text" name="title" class="form-control rounded-3" required placeholder="E'lon sarlavhasi">
                 </div>
                 <div class="row">
@@ -72,10 +72,19 @@
                     <label class="form-label small fw-semibold">Batafsil ma'lumot:</label>
                     <textarea name="description" class="form-control rounded-3" rows="3" required placeholder="Tavsif..."></textarea>
                 </div>
+                
+                <!-- 1. E'lonning o'z rasmi (mashina, uy yoki ish rasmi) -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-primary">📷 E'lon rasmi (Mashina, uy yoki mahsulot rasmi):</label>
+                    <input type="file" name="job_img" class="form-control rounded-3" accept="image/*">
+                </div>
+
+                <!-- 2. To'lov cheki -->
                 <div class="mb-4">
-                    <label class="form-label small fw-semibold text-danger">📥 To'lov cheki rasmini yuklang (20 000 UZS):</label>
+                    <label class="form-label small fw-semibold text-danger">📥 To'lov cheki rasmi (20 000 UZS):</label>
                     <input type="file" name="check_img" class="form-control rounded-3" required accept="image/*">
                 </div>
+
                 <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold">E'loni yuborish (Admin tekshiruviga)</button>
             </form>
             <div class="text-center mt-3">
