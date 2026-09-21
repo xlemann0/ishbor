@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'maxfiy-kalit-soz-ishbor'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['UPLOAD_FOLDER'] = 'static/receipts'
-app.config['ADMIN_PASSWORD'] = 'admin123'
+app.config['ADMIN_PASSWORD'] = 'admin123'  # Admin panel paroli (xohlasangiz o'zgartirishingiz mumkin)
 
 db = SQLAlchemy(app)
 
