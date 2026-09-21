@@ -3,33 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Kirish - IshBor.uz</title>
+    <title>Admin Panel - IshBor.uz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }</style>
 </head>
-<body class="d-flex align-items-center justify-content-center vh-100">
-    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white text-center" style="width: 100%; max-width: 400px;">
-        <h3 class="fw-bold mb-3">Admin Panel</h3>
-        <p class="text-muted small mb-4">Davom etish uchun parolni kiriting</p>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} rounded-4 py-2 small mb-3">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            <div class="mb-3">
-                <input type="password" name="password" class="form-control form-control-lg text-center" placeholder="Parol" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Kirish</button>
-        </form>
-        <div class="mt-3">
-            <a href="/" class="text-decoration-none small text-muted">&larr; Bosh sahifaga qaytish</a>
+<body>
+    <nav class="navbar navbar-dark bg-dark shadow-sm py-3">
+        <div class="container">
+            <span class="navbar-brand fw-bold"><i class="fa-solid fa-shield-halved me-2"></i>Admin Panel</span>
+            <a href="/admin/logout" class="btn btn-outline-light btn-sm px-3 rounded-pill">Chiqish</a>
         </div>
+    </nav>
+
+    <div class="container my-5">
+        <h2 class="fw-bold mb-4">Barcha kelib tushgan e'lonlar</h2>
+
+        {% if jobs %}
+        <div class="table-responsive bg-white rounded-4 shadow-sm p-3">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Vakansiya / Kompaniya</th>
+                        <th>Hudud / Kategoriya</th>
+                        <th>Telefon / Telegram</th>
+                        <th>Chek</th>
+                        <th>Holati</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td class="fw-bold">#{{ job.id }}</td>
+                        <td>
+                            <div class="fw-bold">{{ job.title }}</div>
+                            <div class="text-muted small">{{ job.company }}</div>
+                        </td>
+                        <td>
+                            <div>{{ job.region }}</div>
+                            <div class="text-muted small">{{ job.category }}</div>
+                        </td>
+                        <td>
+                            <div>{{ job.phone }}</div>
+                            <div class="text-muted small">{{ job.telegram }}</div>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('static', filename='receipts/' + job.receipt) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa-solid fa-image me-1"></i> Ko'rish
+                            </a>
+                        </td>
+                        <td>
+                            {% if job.status == 'active' %}
+                            <span class="badge bg-success">Faol</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Kutilmoqda</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                {% if job.status != 'active' %}
+                                <a href="/admin/approve/{{ job.id }}" class="btn btn-sm btn-success" title="Tasdiqlash"><i class="fa-solid fa-check"></i></a>
+                                {% endif %}
+                                <a href="/admin/delete/{{ job.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Haqiqatan ham o\'chirmoqchimisiz?')" title="O'chirish"><i class="fa-solid fa-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+            <p class="text-muted mb-0">Hozircha hech qanday e'lon kelib tushmagan.</p>
+        </div>
+        {% endif %}
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
