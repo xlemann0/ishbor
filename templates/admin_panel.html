@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-dark text-light py-4">
-    <div class="container">
+    <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold text-white"><i class="fa-solid fa-shield-halved text-warning"></i> Admin Boshqaruv Paneli</h3>
             <a href="/" class="btn btn-outline-light btn-sm rounded-pill">Saytga o'tish</a>
         </div>
 
         <div class="card bg-secondary bg-opacity-10 border border-secondary p-4 rounded-4">
-            <h5 class="fw-bold mb-3 text-white">Barcha kelib tushgan e'lonlar va cheklar</h5>
+            <h5 class="fw-bold mb-3 text-white">Kelib tushgan e'lonlar va to'lov cheklari</h5>
             <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle">
                     <thead>
@@ -23,7 +23,7 @@
                             <th>ID</th>
                             <th>Turi / Sarlavha</th>
                             <th>Narxi</th>
-                            <th>Chek / Rasm</th>
+                            <th>To'lov Cheki</th>
                             <th>Holati</th>
                             <th class="text-end">Amallar</th>
                         </tr>
@@ -37,7 +37,16 @@
                                 <span class="small text-info">{{ job.ad_type }} | {{ job.region }}</span>
                             </td>
                             <td class="text-success fw-bold">{{ job.salary }}</td>
-                            <td><span class="badge bg-light text-dark">🖼 {{ job.check_img }}</span></td>
+                            <td>
+                                {% if job.check_img %}
+                                    <!-- Chek rasmini ustiga bosganda ochiladigan qilib chiqaramiz -->
+                                    <a href="{{ url_for('static', filename='uploads/' + job.check_img) }}" target="_blank">
+                                        <img src="{{ url_for('static', filename='uploads/' + job.check_img) }}" alt="Chek" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #fff;">
+                                    </a>
+                                {% else %}
+                                    <span class="text-danger small">Chek yuklanmagan</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if job.status == 'pending' %}
                                     <span class="badge bg-warning text-dark">Kutilyapti</span>
