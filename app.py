@@ -190,22 +190,6 @@ def admin_delete_job(job_id):
     JOBS_DB = [j for j in JOBS_DB if j['id'] != job_id]
     return redirect(url_for('admin_panel'))
 
-@app.route('/admin/edit-job/<int:job_id>', methods=['GET', 'POST'])
-def admin_edit_job(job_id):
-    if not session.get('is_admin'):
-        return redirect(url_for('admin_login'))
-    job = next((j for j in JOBS_DB if j['id'] == job_id), None)
-    if not job:
-        return redirect(url_for('admin_panel'))
-    if request.method == 'POST':
-        job['title'] = request.form.get('title')
-        job['company'] = request.form.get('company')
-        job['salary'] = request.form.get('salary')
-        job['region'] = request.form.get('region')
-        job['description'] = request.form.get('description')
-        return redirect(url_for('admin_panel'))
-    return render_template('admin_edit_job.html', job=job, regions=REGIONS)
-
 @app.route('/logout')
 def logout():
     session.clear()
