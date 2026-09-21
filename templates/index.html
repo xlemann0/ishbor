@@ -3,170 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IshBor-Live.uz — O'zbekistonda ish o'rinlari</title>
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3067/3067444.png">
+    <title>IshBor-Live.uz — O'zbekistonda universal e'lonlar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #ffffff;
-            color: #1e293b;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
-        }
-        .navbar-light-custom {
-            background: #ffffff !important;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .hero-section {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            border-radius: 24px;
-            padding: 50px 30px;
-            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.2);
-        }
-        .search-box {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 50px;
-            padding: 8px;
-        }
-        .search-input {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-        .job-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-        .job-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-            border-color: #cbd5e1;
-        }
-        .badge-cat {
-            background: #e0e7ff;
-            color: #4338ca;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 12px;
-        }
-        .filter-select {
-            background: #f8f9fa;
-            border: 1px solid #ced4da;
-            border-radius: 14px;
-            padding: 12px;
-        }
+        body { background-color: #ffffff; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .navbar-custom { background: #ffffff; border-bottom: 1px solid #e2e8f0; }
+        .hero { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border-radius: 24px; padding: 45px 25px; }
+        .card-job { border: 1px solid #e2e8f0; border-radius: 18px; transition: 0.2s; background: #fff; }
+        .card-job:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+        .badge-type { background: #e0e7ff; color: #4338ca; font-weight: 600; font-size: 11px; padding: 5px 12px; border-radius: 50px; }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-light-custom fixed-top py-3">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top py-3">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-4 text-primary d-flex align-items-center gap-2" href="/">
-                <i class="fa-solid fa-briefcase text-indigo"></i> IshBor-Live.uz
-            </a>
-            
+            <a class="navbar-brand fw-bold fs-4 text-primary" href="/"><i class="fa-solid fa-bolt text-indigo"></i> IshBor-Live.uz</a>
             <div class="d-flex align-items-center gap-2">
-                {% if session.get('user_id') or session.get('is_admin') %}
-                    <a href="/add-job" class="btn btn-primary rounded-pill px-3 fw-semibold btn-sm">
-                        <i class="fa-solid fa-plus me-1"></i> E'lon berish
-                    </a>
-                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="fa-solid fa-user me-1"></i> {{ session.get('user_name') }}</span>
-                    <a href="/logout" class="btn btn-outline-danger rounded-pill px-3 fw-semibold btn-sm">Chiqish</a>
+                {% if session.get('user_id') %}
+                    <a href="/my-ads" class="btn btn-outline-primary rounded-pill px-3 btn-sm fw-semibold"><i class="fa-solid fa-user-gear me-1"></i> Mening e'lonlarim</a>
+                    <a href="/add-job" class="btn btn-primary rounded-pill px-3 btn-sm fw-semibold"><i class="fa-solid fa-plus me-1"></i> E'lon berish</a>
+                    <a href="/logout" class="btn btn-outline-danger rounded-pill px-3 btn-sm">Chiqish</a>
                 {% else %}
-                    <a href="/login" class="btn btn-outline-primary rounded-pill px-3 fw-semibold btn-sm">Kirish</a>
-                    <a href="/register" class="btn btn-primary rounded-pill px-3 fw-semibold btn-sm">Ro'yxatdan o'tish</a>
+                    <a href="/login" class="btn btn-outline-primary rounded-pill px-3 btn-sm fw-semibold">Kirish</a>
+                    <a href="/register" class="btn btn-primary rounded-pill px-3 btn-sm fw-semibold">Ro'yxatdan o'tish</a>
                 {% endif %}
-
                 {% if session.get('is_admin') %}
-                    <a href="/admin" class="btn btn-dark rounded-pill px-3 fw-semibold btn-sm">
-                        <i class="fa-solid fa-shield-halved me-1"></i> Admin panel
-                    </a>
+                    <a href="/admin" class="btn btn-dark rounded-pill px-3 btn-sm">Admin Panel</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <div class="container" style="margin-top: 100px; margin-bottom: 60px;">
-        
-        <!-- Hero Banner -->
-        <div class="hero-section text-center mb-5">
-            <h1 class="fw-bold display-5 mb-3">O'zbekistonda o'zingizga munosib ish toping</h1>
-            <p class="lead mb-4 opacity-90">Eng so'nggi ishonchli bo'sh ish o'rinlari va mutaxassislar bazasi</p>
+    <div class="container" style="margin-top: 100px; margin-bottom: 50px;">
+        <div class="hero text-center mb-4">
+            <h1 class="fw-bold display-6 mb-2">Ish, Avto, Kvartira va Barcha E'lonlar</h1>
+            <p class="opacity-75 small">O'zbekistondagi eng qulay universal e'lonlar platformasi</p>
             
-            <!-- Qidiruv paneli -->
-            <form method="GET" action="/" class="search-box d-flex align-items-center mx-auto bg-white" style="max-width: 600px;">
-                <span class="ps-3 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" name="q" value="{{ query }}" class="form-control search-input px-3" placeholder="Mutaxassislik bo'yicha qidirish...">
-                <button type="submit" class="btn btn-primary rounded-pill px-4 m-1 fw-semibold">Izlash</button>
+            <form method="GET" action="/" class="d-flex bg-white p-2 rounded-pill mx-auto mt-3 shadow-sm" style="max-width: 550px;">
+                <input type="text" name="q" value="{{ query }}" class="form-control border-0 shadow-none px-3" placeholder="Qidirish (masalan: Malibu, Python, Kvartira)...">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold">Izlash</button>
             </form>
         </div>
 
-        <!-- Filterlar -->
-        <form method="GET" action="/" class="row g-3 mb-4">
+        <form method="GET" action="/" class="row g-2 mb-4">
             <div class="col-md-5">
-                <select name="region" class="form-select filter-select" onchange="this.form.submit()">
+                <select name="ad_type" class="form-select rounded-3 py-2" onchange="this.form.submit()">
+                    <option value="Barchasi">📌 Barcha e'lon turlari</option>
+                    {% for t in ad_types %}
+                        <option value="{{ t }}" {% if selected_ad_type == t %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <select name="region" class="form-select rounded-3 py-2" onchange="this.form.submit()">
                     <option value="Barchasi">📍 Barcha hududlar</option>
                     {% for reg in regions %}
                         <option value="{{ reg }}" {% if selected_region == reg %}selected{% endif %}>{{ reg }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-5">
-                <select name="category" class="form-select filter-select" onchange="this.form.submit()">
-                    <option value="Barchasi">📂 Barcha yo'nalishlar</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
-                    {% endfor %}
-                </select>
-            </div>
             <div class="col-md-2">
-                <a href="/" class="btn btn-outline-secondary w-100 h-100 d-flex align-items-center justify-content-center rounded-4">Tozalash</a>
+                <a href="/" class="btn btn-outline-secondary w-100 rounded-3 py-2">Tozalash</a>
             </div>
         </form>
 
-        <!-- E'lonlar -->
         <div class="row g-4">
             {% for job in jobs %}
             <div class="col-md-6">
-                <div class="job-card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
+                <div class="card-job p-4 h-100 d-flex flex-column justify-content-between">
                     <div>
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge-cat">{{ job.category }}</span>
-                            <span class="text-muted small"><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ job.region }}</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge-type">{{ job.ad_type }}</span>
+                            <span class="text-muted small"><i class="fa-solid fa-location-dot text-danger"></i> {{ job.region }}</span>
                         </div>
-                        <h4 class="fw-bold text-dark mb-1">{{ job.title }}</h4>
-                        <p class="text-primary small fw-semibold mb-2"><i class="fa-solid fa-building me-1"></i> {{ job.company }}</p>
+                        <h4 class="fw-bold text-dark fs-5">{{ job.title }}</h4>
+                        <p class="text-primary small fw-semibold mb-2"><i class="fa-solid fa-building"></i> {{ job.company }}</p>
                         <p class="text-secondary small mb-3">{{ job.description }}</p>
                     </div>
-                    
-                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
-                        <span class="text-success fw-bold"><i class="fa-solid fa-wallet me-1"></i> {{ job.salary }}</span>
-                        <a href="tel:{{ job.phone }}" class="btn btn-success rounded-pill px-4 fw-semibold btn-sm">
-                            <i class="fa-solid fa-phone me-1"></i> {{ job.phone }}
-                        </a>
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <span class="text-success fw-bold"><i class="fa-solid fa-wallet"></i> {{ job.salary }}</span>
+                        <a href="tel:{{ job.phone }}" class="btn btn-success btn-sm rounded-pill px-3 fw-semibold"><i class="fa-solid fa-phone"></i> {{ job.phone }}</a>
                     </div>
                 </div>
             </div>
             {% else %}
             <div class="col-12 text-center py-5">
                 <div class="p-5 bg-light rounded-4 border">
-                    <i class="fa-solid fa-folder-open display-4 text-muted mb-3"></i>
-                    <h4 class="fw-bold">E'lon topilmadi</h4>
-                    <p class="text-muted">Hozircha bu yo'nalishda e'lonlar yo'q yoki boshqa so'z bilan qidiring.</p>
+                    <h5 class="fw-bold text-muted">Tasdiqlangan e'lonlar topilmadi</h5>
                 </div>
             </div>
             {% endfor %}
         </div>
-
     </div>
-
 </body>
 </html>
